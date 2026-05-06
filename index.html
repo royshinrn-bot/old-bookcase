@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Old Bookcase">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#d9bf85">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Old Bookcase</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  font-family: "Hoefler Text", "Baskerville", "Iowan Old Style", Georgia, "AppleMyungjo", serif;
+  background: #1a0e08;
+  color: #e8dcc0;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ================ BOOKSHELF ================ */
+.shelf-view {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #e8d5a8;
+  background-image:
+    /* soft warm light from top */
+    radial-gradient(ellipse at 50% -10%, rgba(255,240,200,0.55) 0%, transparent 55%),
+    /* subtle vignette at bottom */
+    radial-gradient(ellipse at 50% 110%, rgba(120,80,40,0.18) 0%, transparent 55%),
+    /* fine vertical grain lines */
+    repeating-linear-gradient(90deg,
+      rgba(120,80,40,0.05) 0px,
+      rgba(120,80,40,0.05) 1px,
+      transparent 1px,
+      transparent 4px),
+    /* wider warm/cool wood bands */
+    repeating-linear-gradient(90deg,
+      rgba(180,130,70,0.08) 0px,
+      rgba(180,130,70,0.08) 18px,
+      rgba(220,180,120,0.05) 18px,
+      rgba(220,180,120,0.05) 42px,
+      rgba(140,90,45,0.07) 42px,
+      rgba(140,90,45,0.07) 70px),
+    /* very gentle horizontal wave (like wood swirl) */
+    repeating-linear-gradient(2deg,
+      rgba(160,110,60,0.04) 0px,
+      rgba(160,110,60,0.04) 80px,
+      transparent 80px,
+      transparent 160px),
+    /* base cream wash */
+    linear-gradient(180deg, #f4e4c1 0%, #e8d2a0 50%, #d8bd82 100%);
+  display: -webkit-box; display: -webkit-flex; display: flex;
+  -webkit-flex-direction: column; flex-direction: column;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.shelf-view::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  /* knot / age spots */
+  background-image:
+    radial-gradient(ellipse 60px 12px at 18% 22%, rgba(120,70,30,0.10), transparent 70%),
+    radial-gradient(ellipse 90px 16px at 78% 48%, rgba(140,90,40,0.08), transparent 70%),
+    radial-gradient(ellipse 50px 10px at 35% 75%, rgba(110,60,20,0.09), transparent 70%),
+    radial-gradient(ellipse 70px 14px at 88% 88%, rgba(130,80,35,0.07), transparent 70%),
+    radial-gradient(ellipse 40px 8px at 60% 12%, rgba(120,70,30,0.08), transparent 70%);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.shelf-header {
+  text-align: center;
+  padding: 32px 20px 28px;
+  position: relative;
+  z-index: 2;
+}
+.shelf-header h1 {
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 700;
+  color: #6b4a14;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 rgba(255,240,200,0.7), 0 2px 4px rgba(120,80,40,0.25);
+}
+.shelf-header .subtitle {
+  font-size: 10px;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: #8b6914;
+  margin-top: 7px;
+  font-style: normal;
+}
+.shelf-header .ornament {
+  color: #a07a25;
+  font-size: 14px;
+  margin-top: 6px;
+  letter-spacing: 0.5em;
+}
+.shelf-header .tagline {
+  font-size: 10px;
+  color: #8b6914;
+  margin-top: 10px;
+  font-family: "Avenir Next", "Avenir", "Helvetica Neue", "Apple SD Gothic Neo", Helvetica, Arial, sans-serif;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  opacity: 0.9;
+  line-height: 1.4;
+  padding: 0 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shelves {
+  -webkit-flex: 1; flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 14px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+.shelf {
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.shelf-books {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: flex-end; align-items: flex-end;
+  min-height: 170px;
+  padding: 0 6px;
+}
+
+.shelf-plank {
+  height: 18px;
+  background:
+    linear-gradient(180deg, #c9914a 0%, #a06d2a 45%, #6b4520 100%);
+  position: relative;
+  border-radius: 1px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,230,180,0.5),
+    inset 0 -2px 4px rgba(60,30,10,0.5),
+    0 6px 12px rgba(120,80,40,0.35);
+}
+.shelf-plank::after {
+  content: '';
+  position: absolute; left: 4px; right: 4px; top: 6px;
+  height: 1px;
+  background: rgba(60,30,10,0.3);
+}
+
+.book {
+  -webkit-flex-shrink: 0; flex-shrink: 0;
+  width: 36px;
+  margin-right: 3px;
+  border-radius: 1px 2px 2px 1px;
+  position: relative;
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: center; justify-content: center;
+  cursor: pointer;
+  -webkit-transition: -webkit-transform 0.2s ease;
+  transition: transform 0.2s ease;
+  box-shadow:
+    inset -3px 0 5px rgba(0,0,0,0.45),
+    inset 2px 0 0 rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.4),
+    2px 3px 6px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+.book::before {
+  content: '';
+  position: absolute; top: 4px; bottom: 4px; left: 3px; right: 3px;
+  border: 1px solid rgba(212,175,55,0.18);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.book::after {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  top: 18%; height: 1px;
+  background: rgba(212,175,55,0.25);
+  box-shadow: 0 50px 0 rgba(212,175,55,0.18), 0 -8px 0 rgba(0,0,0,0.2);
+}
+.book:active { -webkit-transform: translateY(-5px); transform: translateY(-5px); }
+
+.book-spine {
+  -webkit-writing-mode: vertical-rl;
+  writing-mode: vertical-rl;
+  -webkit-text-orientation: mixed;
+  text-orientation: mixed;
+  font-size: 11px;
+  font-style: italic;
+  font-family: "Hoefler Text", "Baskerville", Georgia, "AppleMyungjo", serif;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.7);
+  padding: 14px 0;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  max-height: 100%;
+  text-overflow: ellipsis;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 70px 30px 40px;
+  color: #8b6914;
+}
+.empty-state .icon {
+  font-size: 44px;
+  margin-bottom: 18px;
+  opacity: 0.6;
+  color: #a07a25;
+}
+.empty-state p {
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, #f4d77a 0%, #d4af37 35%, #8b6914 100%);
+  border: 1px solid #2a1810;
+  color: #1a0e08;
+  font-size: 30px;
+  font-family: serif;
+  font-weight: 300;
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 10;
+  line-height: 56px;
+  text-align: center;
+}
+.fab:active { -webkit-transform: scale(0.94); transform: scale(0.94); }
+
+/* Action sheet */
+.sheet {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  -webkit-align-items: flex-end; align-items: flex-end;
+  -webkit-justify-content: center; justify-content: center;
+  z-index: 30;
+}
+.sheet.open { display: -webkit-flex; display: flex; }
+.sheet-panel {
+  background: #2a1810;
+  border-top: 2px solid #8b6914;
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  max-width: 460px;
+  padding: 22px 20px calc(22px + env(safe-area-inset-bottom));
+  color: #e8dcc0;
+}
+.sheet-panel h4 {
+  text-align: center;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+  color: #d4af37;
+  letter-spacing: 0.1em;
+  margin-bottom: 18px;
+}
+.sheet-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+  background: transparent;
+  border: 1px solid rgba(212,175,55,0.4);
+  color: #e8dcc0;
+  font-family: inherit;
+  font-size: 15px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.sheet-btn:active { background: rgba(212,175,55,0.12); }
+.sheet-btn.cancel {
+  border-color: rgba(255,255,255,0.15);
+  color: #8a7a55;
+  margin-top: 16px;
+}
+
+/* Paste modal */
+.paste-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: center; justify-content: center;
+  z-index: 40;
+  padding: 20px;
+}
+.paste-modal.open { display: -webkit-flex; display: flex; }
+.paste-panel {
+  background: #f4e8d0;
+  color: #2a1810;
+  width: 100%;
+  max-width: 440px;
+  padding: 22px;
+  border-radius: 4px;
+  border: 1px solid #c9a961;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+}
+.paste-panel h3 {
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.1em;
+  font-size: 17px;
+  margin-bottom: 16px;
+}
+.paste-panel input, .paste-panel textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #8b6914;
+  background: #faf2dc;
+  font-family: inherit;
+  font-size: 14px;
+  color: #2a1810;
+  border-radius: 2px;
+  -webkit-appearance: none;
+  margin-bottom: 12px;
+  -webkit-user-select: text; user-select: text;
+}
+.paste-panel textarea {
+  height: 180px;
+  resize: none;
+  line-height: 1.5;
+}
+.paste-panel input:focus, .paste-panel textarea:focus {
+  outline: none;
+  border-color: #d4af37;
+}
+.paste-actions {
+  display: -webkit-flex; display: flex;
+  -webkit-justify-content: flex-end; justify-content: flex-end;
+  margin-top: 4px;
+}
+.paste-actions button {
+  padding: 9px 18px;
+  margin-left: 8px;
+  font-family: inherit;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  border: 1px solid #8b6914;
+  background: transparent;
+  color: #2a1810;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.paste-actions button.primary {
+  background: #3d2817;
+  color: #f4e8d0;
+  border-color: #3d2817;
+}
+
+/* ================ READER ================ */
+.reader {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: #f4e8d0;
+  color: #2a1810;
+  display: none;
+  -webkit-flex-direction: column; flex-direction: column;
+  z-index: 20;
+}
+.reader.open { display: -webkit-flex; display: flex; }
+
+.reader-paper {
+  -webkit-flex: 1; flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.reader-content-wrap {
+  position: absolute;
+  top: 56px; bottom: 56px; left: 28px; right: 28px;
+  top: calc(56px + env(safe-area-inset-top));
+  overflow: hidden;
+}
+.reader-content {
+  font-family: "Hoefler Text", "Baskerville", "Iowan Old Style", Georgia, "AppleMyungjo", serif;
+  font-size: 18px;
+  line-height: 1.75;
+  text-align: justify;
+  -webkit-hyphens: auto; hyphens: auto;
+  white-space: pre-wrap;
+  word-break: keep-all;
+  -webkit-transition: -webkit-transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-column-gap: 56px;
+  column-gap: 56px;
+}
+
+.reader-toolbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding-top: env(safe-area-inset-top);
+  height: 50px;
+  height: calc(50px + env(safe-area-inset-top));
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-between; justify-content: space-between;
+  padding-left: 12px; padding-right: 12px;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: opacity 0.25s ease;
+  transition: opacity 0.25s ease;
+  background: linear-gradient(180deg, rgba(244,232,208,0.95) 0%, rgba(244,232,208,0) 100%);
+}
+.reader.show-ui .reader-toolbar { opacity: 1; pointer-events: auto; }
+
+.icon-btn {
+  width: 42px; height: 42px;
+  border: none; background: transparent;
+  font-family: serif;
+  font-size: 24px;
+  color: inherit;
+  cursor: pointer;
+  line-height: 42px;
+  text-align: center;
+}
+.reader-title {
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-flex: 1; flex: 1;
+  text-align: center;
+  padding: 0 8px;
+  opacity: 0.75;
+}
+
+.page-info {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 14px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  text-align: center;
+  font-size: 10px;
+  font-style: italic;
+  letter-spacing: 0.4em;
+  color: rgba(60,40,20,0.45);
+  z-index: 4;
+}
+
+/* ================ SETTINGS ================ */
+.settings {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: center; justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+.settings.open { display: -webkit-flex; display: flex; }
+.settings-panel {
+  background: #f4e8d0;
+  color: #2a1810;
+  padding: 24px 22px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 14px 44px rgba(0,0,0,0.7);
+  border: 1px solid #c9a961;
+  position: relative;
+}
+.settings-panel::before, .settings-panel::after {
+  content: '✦';
+  position: absolute;
+  color: #c9a961;
+  font-size: 13px;
+}
+.settings-panel::before { top: 8px; left: 12px; }
+.settings-panel::after { top: 8px; right: 12px; }
+
+.settings-panel h3 {
+  font-style: italic;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.18em;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.settings-panel .h-rule {
+  text-align: center;
+  color: #c9a961;
+  letter-spacing: 0.6em;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+.settings-row {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-between; justify-content: space-between;
+  margin: 14px 0;
+  font-size: 14px;
+}
+.settings-row .label {
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+.settings-row .controls {
+  display: -webkit-flex; display: flex;
+}
+.settings-row .controls button {
+  width: 38px; height: 38px;
+  border: 1px solid #8b6914;
+  background: transparent;
+  font-family: serif;
+  font-size: 16px;
+  color: #2a1810;
+  margin-left: 4px;
+  border-radius: 2px;
+  cursor: pointer;
+  line-height: 36px;
+  text-align: center;
+}
+.settings-row .controls button.active {
+  background: #3d2817;
+  color: #f4e8d0;
+  border-color: #3d2817;
+}
+.danger-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid #722F37;
+  color: #722F37;
+  font-family: inherit;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  font-size: 13px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.swatch-row {
+  display: -webkit-flex; display: flex;
+  -webkit-flex-wrap: wrap; flex-wrap: wrap;
+  -webkit-justify-content: center; justify-content: center;
+  margin: 8px 0 4px;
+}
+.swatch {
+  width: 34px; height: 34px;
+  margin: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.2);
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  -webkit-transition: -webkit-transform 0.15s; transition: transform 0.15s;
+}
+.swatch:active { -webkit-transform: scale(0.92); transform: scale(0.92); }
+.swatch.active {
+  box-shadow: 0 0 0 2px #f4e8d0, 0 0 0 4px #3d2817;
+}
+
+.font-row {
+  display: -webkit-flex; display: flex;
+  -webkit-flex-wrap: wrap; flex-wrap: wrap;
+  margin: 6px -3px 0;
+}
+.font-btn {
+  -webkit-flex: 1; flex: 1;
+  min-width: 56px;
+  margin: 3px;
+  padding: 8px 4px;
+  border: 1px solid #8b6914;
+  background: transparent;
+  color: #2a1810;
+  font-size: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.font-btn.active {
+  background: #3d2817;
+  color: #f4e8d0;
+  border-color: #3d2817;
+}
+
+.settings-panel {
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.close-btn {
+  display: block;
+  margin: 18px auto 0;
+  padding: 9px 28px;
+  background: #3d2817;
+  color: #f4e8d0;
+  border: none;
+  font-family: serif;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+/* fade transitions */
+.fade-in {
+  -webkit-animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+@-webkit-keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- ============ BOOKSHELF ============ -->
+<div class="shelf-view" id="shelfView">
+  <div class="shelf-header">
+    <h1>Old Bookcase</h1>
+    <div class="ornament">❦ ❦ ❦</div>
+    <div class="subtitle">Once a Classic, Always a Classic</div>
+    <div class="tagline">The world's simplest .txt viewer for your classic devices</div>
+  </div>
+  <div class="shelves" id="shelves"></div>
+  <button class="fab" id="addBtn" aria-label="Add book">+</button>
+</div>
+
+<!-- ============ READER ============ -->
+<div class="reader" id="reader">
+  <div class="reader-paper" id="paper">
+    <div class="reader-content-wrap">
+      <div class="reader-content" id="content"></div>
+    </div>
+  </div>
+  <div class="reader-toolbar">
+    <button class="icon-btn" id="backBtn" aria-label="Back">‹</button>
+    <span class="reader-title" id="readerTitle"></span>
+    <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+  </div>
+  <div class="page-info" id="pageInfo">— · —</div>
+</div>
+
+<!-- ============ ACTION SHEET ============ -->
+<div class="sheet" id="addSheet">
+  <div class="sheet-panel">
+    <h4>~ Add a Volume ~</h4>
+    <button class="sheet-btn" id="pickFile">From a .txt file</button>
+    <button class="sheet-btn" id="pasteText">Paste text</button>
+    <button class="sheet-btn cancel" id="cancelAdd">Cancel</button>
+  </div>
+</div>
+
+<!-- ============ PASTE MODAL ============ -->
+<div class="paste-modal" id="pasteModal">
+  <div class="paste-panel">
+    <h3>~ New Volume ~</h3>
+    <input type="text" id="pasteTitle" placeholder="Title" maxlength="80">
+    <textarea id="pasteBody" placeholder="Paste the text here…"></textarea>
+    <div class="paste-actions">
+      <button id="pasteCancel">Cancel</button>
+      <button class="primary" id="pasteSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SETTINGS ============ -->
+<div class="settings" id="settings">
+  <div class="settings-panel">
+    <h3>Settings</h3>
+    <div class="h-rule">· · ·</div>
+
+    <div class="settings-row">
+      <span class="label">Size</span>
+      <div class="controls">
+        <button id="fontDown">A−</button>
+        <button id="fontUp">A+</button>
+      </div>
+    </div>
+
+    <div class="settings-row">
+      <span class="label">Line</span>
+      <div class="controls">
+        <button id="lineDown">−</button>
+        <button id="lineUp">+</button>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="label" style="font-style:italic;font-size:13px;margin-bottom:4px;">Background</div>
+      <div class="swatch-row" id="swatchRow"></div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <div class="label" style="font-style:italic;font-size:13px;margin-bottom:4px;">Font</div>
+      <div class="font-row" id="fontRow"></div>
+    </div>
+
+    <button class="danger-btn" id="deleteBtn">Remove this book</button>
+    <button class="close-btn" id="closeSettings">Close</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".txt,text/plain" style="display:none">
+
+<script>
+(function(){
+  'use strict';
+
+  // ============ STORAGE ============
+  var STORE_BOOKS = 'oldbookcase.books.v1';
+  var STORE_PREFS = 'oldbookcase.prefs.v1';
+
+  // Leather spine palette (Pantone-leaning)
+  var COLORS = [
+    { bg: 'linear-gradient(90deg,#4a1a20 0%,#722F37 50%,#3a141a 100%)', label: 'rgba(220,180,100,0.92)' },
+    { bg: 'linear-gradient(90deg,#1a3024 0%,#2F4F2F 50%,#162519 100%)', label: 'rgba(220,200,140,0.92)' },
+    { bg: 'linear-gradient(90deg,#0f2236 0%,#1B3A5C 50%,#0a1828 100%)', label: 'rgba(220,200,140,0.92)' },
+    { bg: 'linear-gradient(90deg,#6b4f15 0%,#a07a25 50%,#523d10 100%)', label: 'rgba(40,25,10,0.85)'   },
+    { bg: 'linear-gradient(90deg,#3a2820 0%,#5C4033 50%,#2a1c14 100%)', label: 'rgba(220,190,130,0.92)'},
+    { bg: 'linear-gradient(90deg,#1f1a25 0%,#3d3340 50%,#15111d 100%)', label: 'rgba(200,170,110,0.92)'},
+    { bg: 'linear-gradient(90deg,#5c2a14 0%,#9c4d20 50%,#4a210e 100%)', label: 'rgba(240,210,150,0.92)'},
+    { bg: 'linear-gradient(90deg,#2a3a3a 0%,#4a6a6a 50%,#1f2c2c 100%)', label: 'rgba(220,200,160,0.92)'}
+  ];
+
+  // Reading themes (background + text color). White first as requested.
+  var THEMES = [
+    { name: 'White',  bg: '#ffffff', fg: '#1a1a1a' },
+    { name: 'Paper',  bg: '#f4e8d0', fg: '#2a1810' },
+    { name: 'Sepia',  bg: '#e8d4a8', fg: '#3d2817' },
+    { name: 'Mist',   bg: '#dee5e0', fg: '#2a3530' },
+    { name: 'Night',  bg: '#14100c', fg: '#b09870' },
+    { name: 'Black',  bg: '#000000', fg: '#c8c8c8' }
+  ];
+
+  // Reading fonts
+  var FONTS = [
+    { name: 'Old',     stack: '"Hoefler Text", "Baskerville", "AppleMyungjo", "Nanum Myeongjo", serif' },
+    { name: 'Book',    stack: 'Georgia, "Iowan Old Style", "AppleMyungjo", "Nanum Myeongjo", serif' },
+    { name: 'Sans',    stack: '"Avenir Next", "Avenir", "Helvetica Neue", "Apple SD Gothic Neo", sans-serif' },
+    { name: '명조',    stack: '"AppleMyungjo", "Nanum Myeongjo", "Hoefler Text", serif' },
+    { name: '고딕',    stack: '"Apple SD Gothic Neo", "Nanum Gothic", "Helvetica Neue", sans-serif' }
+  ];
+
+  // Line height steps
+  var LINE_STEPS = [1.4, 1.55, 1.7, 1.85, 2.0, 2.2];
+
+  function loadBooks(){
+    try {
+      var s = localStorage.getItem(STORE_BOOKS);
+      return s ? JSON.parse(s) : [];
+    } catch(e){ return []; }
+  }
+  function saveBooks(){
+    try { localStorage.setItem(STORE_BOOKS, JSON.stringify(books)); } catch(e){}
+  }
+  function loadPrefs(){
+    try {
+      var s = localStorage.getItem(STORE_PREFS);
+      var p = s ? JSON.parse(s) : {};
+      // legacy mode mapping
+      var themeIdx = (typeof p.themeIdx === 'number') ? p.themeIdx : null;
+      if (themeIdx === null) {
+        if (p.mode === 'sepia') themeIdx = 2;
+        else if (p.mode === 'night') themeIdx = 4;
+        else themeIdx = 1; // Paper default
+      }
+      return {
+        fontSize:  p.fontSize  || 18,
+        themeIdx:  themeIdx,
+        fontIdx:   (typeof p.fontIdx === 'number') ? p.fontIdx : 0,
+        lineIdx:   (typeof p.lineIdx === 'number') ? p.lineIdx : 2  // 1.7
+      };
+    } catch(e){ return { fontSize: 18, themeIdx: 1, fontIdx: 0, lineIdx: 2 }; }
+  }
+  function savePrefs(){
+    try { localStorage.setItem(STORE_PREFS, JSON.stringify(prefs)); } catch(e){}
+  }
+
+  // ============ STATE ============
+  var books = loadBooks();
+  var prefs = loadPrefs();
+  var currentBook = null;
+  var currentPage = 0;
+  var pageCount = 1;
+  var pageStep = 0;
+  var uiTimer = null;
+
+  // ============ SHELF RENDER ============
+  function renderShelf(){
+    var shelves = document.getElementById('shelves');
+    shelves.innerHTML = '';
+
+    if (books.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'empty-state fade-in';
+      empty.innerHTML = '<div class="icon">❦</div><p>The shelves stand empty.<br/>Tap the golden mark below<br/>to place your first volume.</p>';
+      shelves.appendChild(empty);
+      return;
+    }
+
+    var perShelf = 8;
+    for (var i = 0; i < books.length; i += perShelf) {
+      var shelf = document.createElement('div');
+      shelf.className = 'shelf';
+      var booksRow = document.createElement('div');
+      booksRow.className = 'shelf-books';
+
+      var end = Math.min(i + perShelf, books.length);
+      for (var j = i; j < end; j++) {
+        booksRow.appendChild(makeBookEl(books[j], j));
+      }
+
+      shelf.appendChild(booksRow);
+      var plank = document.createElement('div');
+      plank.className = 'shelf-plank';
+      shelf.appendChild(plank);
+      shelves.appendChild(shelf);
+    }
+  }
+
+  function makeBookEl(book, index){
+    var el = document.createElement('div');
+    el.className = 'book';
+    var color = COLORS[(book.color || 0) % COLORS.length];
+    var heightPx = 134 + ((book.size || 0) % 5) * 7;
+    el.style.height = heightPx + 'px';
+    el.style.background = color.bg;
+
+    var spine = document.createElement('div');
+    spine.className = 'book-spine';
+    spine.style.color = color.label;
+    spine.textContent = book.title;
+    el.appendChild(spine);
+
+    el.onclick = function(){ openBook(index); };
+    return el;
+  }
+
+  // ============ READER ============
+  function openBook(index){
+    currentBook = index;
+    var book = books[index];
+    document.getElementById('readerTitle').textContent = book.title;
+    document.getElementById('content').textContent = book.content;
+
+    var reader = document.getElementById('reader');
+    reader.classList.add('open');
+    applyTheme();
+    applyFont();
+
+    setTimeout(function(){
+      paginate();
+      goToPage(book.page || 0, false);
+      flashUI();
+    }, 60);
+  }
+
+  function closeBook(){
+    if (currentBook !== null && books[currentBook]) {
+      books[currentBook].page = currentPage;
+      saveBooks();
+    }
+    document.getElementById('reader').classList.remove('open');
+    currentBook = null;
+  }
+
+  function paginate(){
+    var content = document.getElementById('content');
+    var wrap = content.parentNode;
+
+    var w = wrap.clientWidth;
+    var h = wrap.clientHeight;
+    if (w <= 0 || h <= 0) return;
+
+    pageStep = w + 56; // column width + column gap
+
+    content.style.height = h + 'px';
+    content.style.width = w + 'px';
+    content.style.webkitColumnWidth = w + 'px';
+    content.style.columnWidth = w + 'px';
+
+    // force reflow then measure
+    var total = content.scrollWidth;
+    pageCount = Math.max(1, Math.round(total / pageStep));
+  }
+
+  function goToPage(p, animate){
+    if (p < 0) p = 0;
+    if (p >= pageCount) p = pageCount - 1;
+    currentPage = p;
+    var content = document.getElementById('content');
+    content.style.webkitTransition = animate ? '-webkit-transform 0.32s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+    content.style.transition = animate ? 'transform 0.32s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+    var x = -p * pageStep;
+    content.style.webkitTransform = 'translate3d(' + x + 'px,0,0)';
+    content.style.transform = 'translate3d(' + x + 'px,0,0)';
+    document.getElementById('pageInfo').textContent = (p + 1) + ' · ' + pageCount;
+    if (currentBook !== null && books[currentBook]) {
+      books[currentBook].page = p;
+      saveBooks();
+    }
+  }
+
+  function flashUI(){
+    var reader = document.getElementById('reader');
+    reader.classList.add('show-ui');
+    if (uiTimer) clearTimeout(uiTimer);
+    uiTimer = setTimeout(function(){
+      reader.classList.remove('show-ui');
+    }, 2600);
+  }
+
+  function hexToRgba(hex, a){
+    var h = hex.replace('#','');
+    var r = parseInt(h.substring(0,2),16);
+    var g = parseInt(h.substring(2,4),16);
+    var b = parseInt(h.substring(4,6),16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
+  function applyTheme(){
+    var t = THEMES[prefs.themeIdx] || THEMES[1];
+    var reader = document.getElementById('reader');
+    reader.style.background = t.bg;
+    reader.style.color = t.fg;
+    var toolbar = document.querySelector('.reader-toolbar');
+    if (toolbar) {
+      toolbar.style.background = 'linear-gradient(180deg, ' + hexToRgba(t.bg, 0.95) + ' 0%, ' + hexToRgba(t.bg, 0) + ' 100%)';
+    }
+    var info = document.getElementById('pageInfo');
+    if (info) info.style.color = hexToRgba(t.fg, 0.5);
+  }
+
+  function applyFont(){
+    var content = document.getElementById('content');
+    var f = FONTS[prefs.fontIdx] || FONTS[0];
+    content.style.fontFamily = f.stack;
+    content.style.fontSize = prefs.fontSize + 'px';
+    content.style.lineHeight = LINE_STEPS[prefs.lineIdx] || 1.7;
+    if (currentBook !== null) {
+      setTimeout(function(){
+        paginate();
+        goToPage(currentPage, false);
+      }, 40);
+    }
+  }
+
+  // ============ ADD BOOK ============
+  function addBookFromText(title, text){
+    var t = (title || 'Untitled').replace(/^\s+|\s+$/g, '');
+    if (t.length > 60) t = t.substring(0, 58) + '…';
+    if (!t) t = 'Untitled';
+    books.push({
+      title: t,
+      content: text,
+      color: Math.floor(Math.random() * COLORS.length),
+      size: Math.floor(Math.random() * 5),
+      page: 0,
+      added: (new Date()).getTime()
+    });
+    saveBooks();
+    renderShelf();
+  }
+
+  // ============ EVENTS ============
+  document.getElementById('addBtn').onclick = function(){
+    document.getElementById('addSheet').classList.add('open');
+  };
+  document.getElementById('cancelAdd').onclick = function(){
+    document.getElementById('addSheet').classList.remove('open');
+  };
+  document.getElementById('addSheet').onclick = function(e){
+    if (e.target === this) this.classList.remove('open');
+  };
+
+  document.getElementById('pickFile').onclick = function(){
+    document.getElementById('addSheet').classList.remove('open');
+    document.getElementById('fileInput').click();
+  };
+
+  document.getElementById('pasteText').onclick = function(){
+    document.getElementById('addSheet').classList.remove('open');
+    document.getElementById('pasteTitle').value = '';
+    document.getElementById('pasteBody').value = '';
+    document.getElementById('pasteModal').classList.add('open');
+    setTimeout(function(){ document.getElementById('pasteTitle').focus(); }, 100);
+  };
+
+  document.getElementById('pasteCancel').onclick = function(){
+    document.getElementById('pasteModal').classList.remove('open');
+  };
+
+  document.getElementById('pasteSave').onclick = function(){
+    var title = document.getElementById('pasteTitle').value;
+    var body = document.getElementById('pasteBody').value;
+    if (!body || body.replace(/\s/g, '').length === 0) {
+      alert('Please paste some text.');
+      return;
+    }
+    addBookFromText(title || 'Untitled', body);
+    document.getElementById('pasteModal').classList.remove('open');
+  };
+
+  // Smart encoding read: BOM check, UTF-8 first, fall back to EUC-KR if many replacement chars
+  function badCharRatio(text){
+    var sampleLen = Math.min(text.length, 8000);
+    if (sampleLen === 0) return 1;
+    var bad = 0;
+    for (var i = 0; i < sampleLen; i++) {
+      if (text.charCodeAt(i) === 0xFFFD) bad++;
+    }
+    return bad / sampleLen;
+  }
+
+  function readFileSmart(file, callback){
+    // Step 1: read as ArrayBuffer to inspect BOM
+    var probe = new FileReader();
+    probe.onload = function(ev){
+      var buf = ev.target.result;
+      var arr = new Uint8Array(buf);
+      var enc = 'UTF-8';
+      if (arr.length >= 3 && arr[0] === 0xEF && arr[1] === 0xBB && arr[2] === 0xBF) {
+        enc = 'UTF-8';
+      } else if (arr.length >= 2 && arr[0] === 0xFF && arr[1] === 0xFE) {
+        enc = 'UTF-16LE';
+      } else if (arr.length >= 2 && arr[0] === 0xFE && arr[1] === 0xFF) {
+        enc = 'UTF-16BE';
+      }
+
+      // Step 2: read with first guess
+      var first = new FileReader();
+      first.onload = function(ev2){
+        var text = ev2.target.result;
+        // If UTF-8 result looks bad, try Korean encoding
+        if (enc === 'UTF-8' && badCharRatio(text) > 0.01) {
+          var second = new FileReader();
+          second.onload = function(ev3){
+            var text2 = ev3.target.result;
+            // Pick whichever is cleaner
+            if (badCharRatio(text2) < badCharRatio(text)) callback(text2, 'EUC-KR');
+            else callback(text, 'UTF-8');
+          };
+          second.onerror = function(){ callback(text, 'UTF-8'); };
+          try { second.readAsText(file, 'EUC-KR'); }
+          catch(err) { callback(text, 'UTF-8'); }
+        } else {
+          callback(text, enc);
+        }
+      };
+      first.onerror = function(){ alert('Could not read the file.'); };
+      try { first.readAsText(file, enc); }
+      catch(err) { first.readAsText(file); }
+    };
+    probe.onerror = function(){ alert('Could not read the file.'); };
+    try { probe.readAsArrayBuffer(file); }
+    catch(err) {
+      // very old browser without ArrayBuffer support: fall back to plain read
+      var fr = new FileReader();
+      fr.onload = function(ev){ callback(ev.target.result, 'UTF-8'); };
+      fr.onerror = function(){ alert('Could not read the file.'); };
+      try { fr.readAsText(file, 'UTF-8'); } catch(e2){ fr.readAsText(file); }
+    }
+  }
+
+  document.getElementById('fileInput').onchange = function(e){
+    var files = e.target.files;
+    if (!files || !files[0]) return;
+    var file = files[0];
+    readFileSmart(file, function(text, enc){
+      var title = file.name.replace(/\.txt$/i, '');
+      addBookFromText(title, text);
+    });
+    e.target.value = '';
+  };
+
+  document.getElementById('backBtn').onclick = closeBook;
+
+  document.getElementById('settingsBtn').onclick = function(){
+    document.getElementById('settings').classList.add('open');
+    updateSettingsUI();
+  };
+  document.getElementById('closeSettings').onclick = function(){
+    document.getElementById('settings').classList.remove('open');
+  };
+  document.getElementById('settings').onclick = function(e){
+    if (e.target === this) this.classList.remove('open');
+  };
+
+  // Reader navigation: tap & swipe
+  var paper = document.getElementById('paper');
+  var startX = 0, startY = 0, startT = 0, moved = false;
+
+  paper.addEventListener('touchstart', function(e){
+    var t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+    startT = (new Date()).getTime();
+    moved = false;
+  }, false);
+
+  paper.addEventListener('touchmove', function(e){
+    var t = e.touches[0];
+    if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) moved = true;
+  }, false);
+
+  paper.addEventListener('touchend', function(e){
+    var t = e.changedTouches[0];
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
+    var dt = (new Date()).getTime() - startT;
+
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4 && dt < 600) {
+      if (dx < 0) goToPage(currentPage + 1, true);
+      else goToPage(currentPage - 1, true);
+      return;
+    }
+
+    if (!moved && dt < 400) {
+      var w = paper.clientWidth;
+      var x = t.clientX;
+      if (x < w * 0.32) goToPage(currentPage - 1, true);
+      else if (x > w * 0.68) goToPage(currentPage + 1, true);
+      else flashUI();
+    }
+  }, false);
+
+  // mouse fallback (desktop preview)
+  paper.addEventListener('click', function(e){
+    if ('ontouchstart' in window) return;
+    var w = paper.clientWidth;
+    var x = e.clientX;
+    if (x < w * 0.32) goToPage(currentPage - 1, true);
+    else if (x > w * 0.68) goToPage(currentPage + 1, true);
+    else flashUI();
+  });
+
+  // Settings buttons
+  document.getElementById('fontUp').onclick = function(){
+    if (prefs.fontSize < 30) { prefs.fontSize += 2; savePrefs(); applyFont(); }
+  };
+  document.getElementById('fontDown').onclick = function(){
+    if (prefs.fontSize > 12) { prefs.fontSize -= 2; savePrefs(); applyFont(); }
+  };
+  document.getElementById('lineUp').onclick = function(){
+    if (prefs.lineIdx < LINE_STEPS.length - 1) { prefs.lineIdx++; savePrefs(); applyFont(); }
+  };
+  document.getElementById('lineDown').onclick = function(){
+    if (prefs.lineIdx > 0) { prefs.lineIdx--; savePrefs(); applyFont(); }
+  };
+
+  // Build swatches
+  (function buildSwatches(){
+    var row = document.getElementById('swatchRow');
+    for (var i = 0; i < THEMES.length; i++) {
+      (function(idx){
+        var btn = document.createElement('button');
+        btn.className = 'swatch';
+        btn.setAttribute('data-theme', idx);
+        btn.style.background = THEMES[idx].bg;
+        btn.title = THEMES[idx].name;
+        btn.onclick = function(){
+          prefs.themeIdx = idx;
+          savePrefs();
+          applyTheme();
+          updateSettingsUI();
+        };
+        row.appendChild(btn);
+      })(i);
+    }
+  })();
+
+  // Build font buttons
+  (function buildFonts(){
+    var row = document.getElementById('fontRow');
+    for (var i = 0; i < FONTS.length; i++) {
+      (function(idx){
+        var btn = document.createElement('button');
+        btn.className = 'font-btn';
+        btn.setAttribute('data-font', idx);
+        btn.textContent = FONTS[idx].name;
+        btn.style.fontFamily = FONTS[idx].stack;
+        btn.onclick = function(){
+          prefs.fontIdx = idx;
+          savePrefs();
+          applyFont();
+          updateSettingsUI();
+        };
+        row.appendChild(btn);
+      })(i);
+    }
+  })();
+
+  document.getElementById('deleteBtn').onclick = function(){
+    if (currentBook === null) return;
+    if (!confirm('Remove this book from the shelf?')) return;
+    books.splice(currentBook, 1);
+    saveBooks();
+    document.getElementById('settings').classList.remove('open');
+    closeBook();
+    renderShelf();
+  };
+
+  function updateSettingsUI(){
+    var swatches = document.querySelectorAll('.swatch');
+    for (var i = 0; i < swatches.length; i++) {
+      if (parseInt(swatches[i].getAttribute('data-theme'),10) === prefs.themeIdx) swatches[i].classList.add('active');
+      else swatches[i].classList.remove('active');
+    }
+    var fonts = document.querySelectorAll('.font-btn');
+    for (var j = 0; j < fonts.length; j++) {
+      if (parseInt(fonts[j].getAttribute('data-font'),10) === prefs.fontIdx) fonts[j].classList.add('active');
+      else fonts[j].classList.remove('active');
+    }
+  }
+
+  // resize / orientation
+  var resizeT;
+  function onResize(){
+    if (currentBook === null) return;
+    clearTimeout(resizeT);
+    resizeT = setTimeout(function(){
+      paginate();
+      goToPage(currentPage, false);
+    }, 220);
+  }
+  window.addEventListener('resize', onResize);
+  window.addEventListener('orientationchange', function(){
+    if (currentBook === null) return;
+    setTimeout(function(){ paginate(); goToPage(currentPage, false); }, 420);
+  });
+
+  // prevent accidental scroll bounce on iOS
+  document.addEventListener('touchmove', function(e){
+    var t = e.target;
+    while (t) {
+      if (t.classList && (t.classList.contains('shelves') || t.tagName === 'TEXTAREA' || t.tagName === 'INPUT')) return;
+      t = t.parentNode;
+    }
+    e.preventDefault();
+  }, { passive: false });
+
+  // ============ INIT ============
+  renderShelf();
+
+  // Register Service Worker for offline support
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(err){
+        console.log('SW registration failed:', err);
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
