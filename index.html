@@ -185,7 +185,7 @@ body {
 
 .book {
   -webkit-flex-shrink: 0; flex-shrink: 0;
-  width: 56px;
+  width: 60px;
   margin-right: 8px;
   border-radius: 1px 3px 3px 1px;
   position: relative;
@@ -224,12 +224,13 @@ body {
   writing-mode: vertical-rl;
   -webkit-text-orientation: mixed;
   text-orientation: mixed;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
   font-style: italic;
   font-family: "Hoefler Text", "Baskerville", Georgia, "AppleMyungjo", serif;
   text-shadow: 0 1px 1px rgba(0,0,0,0.7);
   padding: 16px 0;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   max-height: 100%;
@@ -457,6 +458,194 @@ body {
 }
 .pdf-wrap.loading .pdf-loading { display: block; }
 .pdf-wrap.loading #pdfCanvas { opacity: 0.3; }
+
+/* Bookmark ribbon */
+.bookmark-ribbon {
+  position: absolute;
+  top: 0;
+  top: env(safe-area-inset-top);
+  right: 28px;
+  width: 26px;
+  height: 44px;
+  z-index: 6;
+  display: none;
+  pointer-events: none;
+  -webkit-filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.bookmark-ribbon.show {
+  display: block;
+  -webkit-animation: ribbonIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: ribbonIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@-webkit-keyframes ribbonIn { from { -webkit-transform: translateY(-16px); opacity: 0; } to { -webkit-transform: translateY(0); opacity: 1; } }
+@keyframes ribbonIn { from { transform: translateY(-16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Long-press indicator (subtle pulse) */
+.long-press-pulse {
+  position: absolute;
+  border-radius: 50%;
+  width: 80px; height: 80px;
+  margin-left: -40px; margin-top: -40px;
+  background: radial-gradient(circle, rgba(198,40,40,0.25), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 7;
+}
+.long-press-pulse.active {
+  -webkit-animation: pulseRing 0.55s ease-out;
+  animation: pulseRing 0.55s ease-out;
+}
+@-webkit-keyframes pulseRing { 0% { -webkit-transform: scale(0.4); opacity: 0; } 60% { opacity: 1; } 100% { -webkit-transform: scale(1.6); opacity: 0; } }
+@keyframes pulseRing { 0% { transform: scale(0.4); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+
+/* Bookmarks list in settings */
+.bookmarks-section { margin-top: 14px; }
+.bookmarks-list {
+  max-height: 130px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(255, 250, 235, 0.5);
+  border: 1px solid rgba(139, 105, 20, 0.25);
+  border-radius: 2px;
+  padding: 4px;
+  margin-top: 4px;
+}
+.bookmark-item {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-between; justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: #2a1810;
+  cursor: pointer;
+  border-radius: 2px;
+  margin: 1px 0;
+}
+.bookmark-item:active { background: rgba(198,40,40,0.12); }
+.bookmark-item .mark {
+  color: #c62828;
+  font-size: 14px;
+  margin-right: 10px;
+}
+.bookmark-item .page {
+  -webkit-flex: 1; flex: 1;
+  font-style: italic;
+}
+.bookmark-item .remove {
+  font-size: 18px;
+  color: #999;
+  padding: 0 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.bookmarks-empty {
+  padding: 14px 10px;
+  text-align: center;
+  color: #8b6914;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Bookmark prompt modal */
+.bookmark-prompt-panel {
+  max-width: 300px;
+}
+.prompt-text {
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  margin: 16px 8px 22px;
+  font-style: italic;
+  color: #2a1810;
+}
+#promptPageNum {
+  font-weight: 600;
+  color: #6b4a14;
+  font-style: normal;
+  letter-spacing: 0.02em;
+}
+.prompt-actions {
+  display: -webkit-flex; display: flex;
+  -webkit-flex-direction: column; flex-direction: column;
+}
+.prompt-btn {
+  padding: 13px;
+  margin: 4px 0;
+  font-family: inherit;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  font-size: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  width: 100%;
+}
+.prompt-btn.primary {
+  background: #c62828;
+  color: #fff;
+  border: 1px solid #8b1a1a;
+  font-weight: 500;
+}
+.prompt-btn.primary:active { background: #a01f1f; }
+.prompt-btn.neutral {
+  background: transparent;
+  color: #2a1810;
+  border: 1px solid #8b6914;
+}
+.prompt-btn.neutral:active { background: rgba(139,105,20,0.1); }
+.prompt-btn.cancel {
+  background: transparent;
+  color: #6b4a14;
+  border: none;
+  margin-top: 6px;
+  opacity: 0.75;
+}
+.ribbon-icon { color: #fff; margin-right: 6px; }
+
+/* Bookmark prompt modal (asked when leaving) */
+.prompt-text {
+  margin: 14px 0 6px;
+  line-height: 1.65;
+  font-size: 14px;
+  text-align: center;
+  color: #2a1810;
+}
+.prompt-text strong {
+  color: #c62828;
+  font-style: italic;
+  font-weight: 600;
+}
+.prompt-actions {
+  display: -webkit-flex; display: flex;
+  margin-top: 18px;
+}
+.prompt-btn {
+  -webkit-flex: 1; flex: 1;
+  padding: 12px 10px;
+  margin: 0 4px;
+  border: 1px solid #8b6914;
+  background: transparent;
+  color: #2a1810;
+  font-family: inherit;
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.prompt-btn.primary {
+  background: #c62828;
+  color: #fff7e8;
+  border-color: #a01f1f;
+}
+.prompt-btn:active { opacity: 0.7; }
 .reader-content {
   font-family: "Hoefler Text", "Baskerville", "Iowan Old Style", Georgia, "AppleMyungjo", serif;
   font-size: 18px;
@@ -783,6 +972,12 @@ body {
       <canvas id="pdfCanvas"></canvas>
       <div class="pdf-loading" id="pdfLoading">Loading PDF…</div>
     </div>
+    <svg class="bookmark-ribbon" id="bookmarkRibbon" viewBox="0 0 26 44" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0 L26 0 L26 44 L13 36 L0 44 Z" fill="#c62828"/>
+      <path d="M0 0 L26 0 L26 4 L0 4 Z" fill="#a01f1f"/>
+      <path d="M2 6 L24 6" stroke="#8a1818" stroke-width="0.4" opacity="0.5"/>
+    </svg>
+    <div class="long-press-pulse" id="longPressPulse"></div>
   </div>
   <div class="reader-toolbar">
     <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
@@ -847,8 +1042,32 @@ body {
       <div class="font-row" id="fontRow"></div>
     </div>
 
+    <div class="bookmarks-section">
+      <div class="label" style="font-style:italic;font-size:13px;margin-bottom:4px;">Bookmarks</div>
+      <div id="bookmarksList" class="bookmarks-list"></div>
+    </div>
+
     <button class="danger-btn" id="deleteBtn">Remove this book</button>
     <button class="close-btn" id="closeSettings">Close</button>
+  </div>
+</div>
+
+<!-- ============ BOOKMARK PROMPT ============ -->
+<div class="settings" id="bookmarkPrompt">
+  <div class="settings-panel bookmark-prompt-panel">
+    <h3>Save your place?</h3>
+    <div class="h-rule">· · ·</div>
+    <p class="prompt-text">
+      You're on <span id="promptPageNum">page —</span>.<br/>
+      Add a bookmark before leaving?
+    </p>
+    <div class="prompt-actions">
+      <button class="prompt-btn primary" id="promptBookmarkLeave">
+        <span class="ribbon-icon">▌</span> Bookmark &amp; leave
+      </button>
+      <button class="prompt-btn neutral" id="promptJustLeave">Just leave</button>
+      <button class="prompt-btn cancel" id="promptStay">Keep reading</button>
+    </div>
   </div>
 </div>
 
@@ -928,16 +1147,45 @@ body {
     return pdfjsLoading;
   }
 
-  // Leather spine palette (Pantone-leaning)
+  // Leather spine palette (Pantone-inspired, 28 variations)
   var COLORS = [
+    // — Reds / Burgundies —
     { bg: 'linear-gradient(90deg,#4a1a20 0%,#722F37 50%,#3a141a 100%)', label: 'rgba(220,180,100,0.92)' },
+    { bg: 'linear-gradient(90deg,#5c1f25 0%,#8c3540 50%,#4a161c 100%)', label: 'rgba(225,190,130,0.92)' },
+    { bg: 'linear-gradient(90deg,#7a2828 0%,#a83838 50%,#5e1f1f 100%)', label: 'rgba(245,225,170,0.92)' },
+    { bg: 'linear-gradient(90deg,#6b2818 0%,#8c3a23 50%,#511e10 100%)', label: 'rgba(240,210,150,0.92)' },
+    // — Oranges / Rust —
+    { bg: 'linear-gradient(90deg,#5c2a14 0%,#9c4d20 50%,#4a210e 100%)', label: 'rgba(240,210,150,0.92)' },
+    { bg: 'linear-gradient(90deg,#7a3a1a 0%,#a85328 50%,#5c2a13 100%)', label: 'rgba(245,225,180,0.92)' },
+    // — Greens —
     { bg: 'linear-gradient(90deg,#1a3024 0%,#2F4F2F 50%,#162519 100%)', label: 'rgba(220,200,140,0.92)' },
+    { bg: 'linear-gradient(90deg,#1e3a30 0%,#345448 50%,#162a22 100%)', label: 'rgba(220,205,160,0.92)' },
+    { bg: 'linear-gradient(90deg,#2c4a30 0%,#456a45 50%,#243a26 100%)', label: 'rgba(230,215,170,0.92)' },
+    { bg: 'linear-gradient(90deg,#3a4828 0%,#5a6c3c 50%,#2c3820 100%)', label: 'rgba(235,220,170,0.92)' },
+    { bg: 'linear-gradient(90deg,#2a3a3a 0%,#4a6a6a 50%,#1f2c2c 100%)', label: 'rgba(220,200,160,0.92)' },
+    // — Blues —
     { bg: 'linear-gradient(90deg,#0f2236 0%,#1B3A5C 50%,#0a1828 100%)', label: 'rgba(220,200,140,0.92)' },
+    { bg: 'linear-gradient(90deg,#162e4a 0%,#2a4a72 50%,#0e2138 100%)', label: 'rgba(225,210,160,0.92)' },
+    { bg: 'linear-gradient(90deg,#1e3a52 0%,#2f5a7c 50%,#162a3a 100%)', label: 'rgba(230,215,170,0.92)' },
+    { bg: 'linear-gradient(90deg,#2c4858 0%,#456c80 50%,#1f3540 100%)', label: 'rgba(225,210,170,0.92)' },
+    // — Purples —
+    { bg: 'linear-gradient(90deg,#1f1a25 0%,#3d3340 50%,#15111d 100%)', label: 'rgba(200,170,110,0.92)' },
+    { bg: 'linear-gradient(90deg,#2a1f3a 0%,#48386a 50%,#1e1530 100%)', label: 'rgba(210,185,140,0.92)' },
+    { bg: 'linear-gradient(90deg,#3a2840 0%,#5a4068 50%,#281c2e 100%)', label: 'rgba(220,200,170,0.92)' },
+    // — Golds / Mustards —
     { bg: 'linear-gradient(90deg,#6b4f15 0%,#a07a25 50%,#523d10 100%)', label: 'rgba(40,25,10,0.85)'   },
-    { bg: 'linear-gradient(90deg,#3a2820 0%,#5C4033 50%,#2a1c14 100%)', label: 'rgba(220,190,130,0.92)'},
-    { bg: 'linear-gradient(90deg,#1f1a25 0%,#3d3340 50%,#15111d 100%)', label: 'rgba(200,170,110,0.92)'},
-    { bg: 'linear-gradient(90deg,#5c2a14 0%,#9c4d20 50%,#4a210e 100%)', label: 'rgba(240,210,150,0.92)'},
-    { bg: 'linear-gradient(90deg,#2a3a3a 0%,#4a6a6a 50%,#1f2c2c 100%)', label: 'rgba(220,200,160,0.92)'}
+    { bg: 'linear-gradient(90deg,#7a5f1a 0%,#b08a30 50%,#5c4514 100%)', label: 'rgba(50,30,10,0.85)'   },
+    { bg: 'linear-gradient(90deg,#8c6b1f 0%,#c0942e 50%,#6e5318 100%)', label: 'rgba(45,25,5,0.85)'    },
+    // — Browns / Leathers —
+    { bg: 'linear-gradient(90deg,#3a2820 0%,#5C4033 50%,#2a1c14 100%)', label: 'rgba(220,190,130,0.92)' },
+    { bg: 'linear-gradient(90deg,#4a3325 0%,#6a4f3a 50%,#322218 100%)', label: 'rgba(230,200,150,0.92)' },
+    { bg: 'linear-gradient(90deg,#5a4435 0%,#7a5c45 50%,#3e2e23 100%)', label: 'rgba(240,215,170,0.92)' },
+    { bg: 'linear-gradient(90deg,#2a1f14 0%,#3e2e1f 50%,#1a120a 100%)', label: 'rgba(220,185,130,0.92)' },
+    // — Greys / Charcoals —
+    { bg: 'linear-gradient(90deg,#2a2a2c 0%,#4a4a4d 50%,#1a1a1c 100%)', label: 'rgba(220,210,180,0.92)' },
+    { bg: 'linear-gradient(90deg,#383a3c 0%,#5a5d61 50%,#26282a 100%)', label: 'rgba(225,215,180,0.92)' },
+    // — Coral —
+    { bg: 'linear-gradient(90deg,#7c3a3a 0%,#a85a5a 50%,#5c2a2a 100%)', label: 'rgba(245,225,200,0.92)' }
   ];
 
   // Reading themes (background + text color). White first as requested.
@@ -1002,14 +1250,15 @@ body {
   var pageCount = 1;
   var pageStep = 0;
   var uiTimer = null;
+  var openedAtPage = 0;
 
   // RENDER BOOKSHELF
   function calcPerShelf(){
     var shelves = document.getElementById('shelves');
     var w = (shelves && shelves.clientWidth) ? shelves.clientWidth : window.innerWidth;
-    // book width 56 + margin 8 = 64 per book
-    var available = w - 16; // padding
-    var n = Math.floor(available / 64);
+    // book width 60 + margin 8 = 68 per book
+    var available = w - 16;
+    var n = Math.floor(available / 68);
     if (n < 3) n = 3;
     if (n > 8) n = 8;
     return n;
@@ -1072,6 +1321,10 @@ body {
   function openBook(index){
     currentBook = index;
     var book = books[index];
+    // Always reset state immediately to avoid stale page from previous book
+    currentPage = 0;
+    pageCount = 1;
+
     document.getElementById('readerTitle').textContent = book.title;
 
     var reader = document.getElementById('reader');
@@ -1081,24 +1334,40 @@ body {
     var textWrap = document.getElementById('textWrap');
     var pdfWrap  = document.getElementById('pdfWrap');
 
+    // Determine starting page: most recent bookmark, else page 0
+    var startPage = 0;
+    if (book.bookmarks && book.bookmarks.length > 0) {
+      startPage = book.bookmarks[book.bookmarks.length - 1];
+    }
+
     if (book.type === 'pdf') {
       textWrap.classList.add('hide');
       pdfWrap.classList.add('show');
-      openPDF(book);
+      openPDF(book, startPage);
     } else {
       pdfWrap.classList.remove('show');
       textWrap.classList.remove('hide');
       document.getElementById('content').textContent = book.content;
-      applyFont();
+      // Apply font styles directly (don't rely on applyFont's deferred paginate)
+      var content = document.getElementById('content');
+      var f = FONTS[prefs.fontIdx] || FONTS[0];
+      content.style.fontFamily = f.stack;
+      content.style.fontSize = prefs.fontSize + 'px';
+      content.style.lineHeight = LINE_STEPS[prefs.lineIdx] || 1.7;
+      // Reset transform so we start clean
+      content.style.webkitTransform = 'translate3d(0,0,0)';
+      content.style.transform = 'translate3d(0,0,0)';
       setTimeout(function(){
         paginate();
-        goToPage(book.page || 0, false);
+        goToPage(startPage, false);
+        openedAtPage = currentPage;
+        updateBookmarkRibbon();
         flashUI();
       }, 60);
     }
   }
 
-  function openPDF(book){
+  function openPDF(book, startPage){
     var wrap = document.getElementById('pdfWrap');
     wrap.classList.add('loading');
     pdfDoc = null;
@@ -1107,18 +1376,19 @@ body {
       return idbGet(book.id);
     }).then(function(arrayBuffer){
       if (!arrayBuffer) throw new Error('PDF data not found.');
-      // Need a copy — pdf.js may transfer the buffer
       var data = (arrayBuffer instanceof ArrayBuffer) ? arrayBuffer.slice(0) : arrayBuffer;
       return pdfjsLib.getDocument({ data: data }).promise;
     }).then(function(pdf){
       pdfDoc = pdf;
       pageCount = pdf.numPages;
-      var p = book.page || 0;
+      var p = startPage || 0;
       if (p >= pageCount) p = pageCount - 1;
       if (p < 0) p = 0;
       currentPage = p;
+      openedAtPage = p;
       wrap.classList.remove('loading');
       renderPDFPage(currentPage);
+      updateBookmarkRibbon();
       flashUI();
     }).catch(function(err){
       wrap.classList.remove('loading');
@@ -1152,10 +1422,6 @@ body {
   }
 
   function closeBook(){
-    if (currentBook !== null && books[currentBook]) {
-      books[currentBook].page = currentPage;
-      saveBooks();
-    }
     document.getElementById('reader').classList.remove('open');
     if (pdfRenderTask) { try { pdfRenderTask.cancel(); } catch(e){} }
     pdfDoc = null;
@@ -1201,10 +1467,8 @@ body {
       content.style.transform = 'translate3d(' + x + 'px,0,0)';
       document.getElementById('pageInfo').textContent = (p + 1) + ' · ' + pageCount;
     }
-    if (book) {
-      book.page = p;
-      saveBooks();
-    }
+    // Bookmarks are manual; we no longer auto-save current page.
+    updateBookmarkRibbon();
   }
 
   function flashUI(){
@@ -1214,6 +1478,48 @@ body {
     uiTimer = setTimeout(function(){
       reader.classList.remove('show-ui');
     }, 2600);
+  }
+
+  // ============ BOOKMARKS (manual) ============
+  function toggleBookmark(page){
+    if (currentBook === null) return;
+    var book = books[currentBook];
+    if (!book.bookmarks) book.bookmarks = [];
+    var idx = book.bookmarks.indexOf(page);
+    if (idx >= 0) {
+      book.bookmarks.splice(idx, 1);
+    } else {
+      book.bookmarks.push(page);
+      book.bookmarks.sort(function(a, b){ return a - b; });
+    }
+    saveBooks();
+    updateBookmarkRibbon();
+    if (window.navigator && navigator.vibrate) {
+      try { navigator.vibrate(idx >= 0 ? 20 : 40); } catch(e){}
+    }
+  }
+
+  function updateBookmarkRibbon(){
+    var ribbon = document.getElementById('bookmarkRibbon');
+    if (!ribbon) return;
+    if (currentBook === null) { ribbon.classList.remove('show'); return; }
+    var book = books[currentBook];
+    var has = book && book.bookmarks && book.bookmarks.indexOf(currentPage) >= 0;
+    if (has) ribbon.classList.add('show');
+    else ribbon.classList.remove('show');
+  }
+
+  function showLongPressPulse(x, y){
+    var pulse = document.getElementById('longPressPulse');
+    if (!pulse) return;
+    var paper = document.getElementById('paper');
+    var rect = paper.getBoundingClientRect();
+    pulse.style.left = (x - rect.left) + 'px';
+    pulse.style.top  = (y - rect.top)  + 'px';
+    pulse.classList.remove('active');
+    // force reflow to restart animation
+    void pulse.offsetWidth;
+    pulse.classList.add('active');
   }
 
   function hexToRgba(hex, a){
@@ -1263,7 +1569,7 @@ body {
       content: text,
       color: Math.floor(Math.random() * COLORS.length),
       size: Math.floor(Math.random() * 5),
-      page: 0,
+      bookmarks: [],
       added: (new Date()).getTime()
     });
     saveBooks();
@@ -1395,7 +1701,7 @@ body {
           type: 'pdf',
           color: Math.floor(Math.random() * COLORS.length),
           size: Math.floor(Math.random() * 5),
-          page: 0,
+          bookmarks: [],
           added: (new Date()).getTime()
         });
         saveBooks();
@@ -1426,11 +1732,41 @@ body {
     e.target.value = '';
   };
 
-  document.getElementById('backBtn').onclick = closeBook;
+  function attemptCloseBook(){
+    if (currentBook === null) { closeBook(); return; }
+    var book = books[currentBook];
+    var isBookmarked = book && book.bookmarks && book.bookmarks.indexOf(currentPage) >= 0;
+    // No prompt if: page already bookmarked, OR user hasn't moved from where they opened
+    if (isBookmarked || currentPage === openedAtPage) {
+      closeBook();
+      return;
+    }
+    document.getElementById('promptPageNum').textContent = 'page ' + (currentPage + 1);
+    document.getElementById('bookmarkPrompt').classList.add('open');
+  }
+
+  document.getElementById('backBtn').onclick = attemptCloseBook;
+
+  document.getElementById('promptBookmarkLeave').onclick = function(){
+    toggleBookmark(currentPage);
+    document.getElementById('bookmarkPrompt').classList.remove('open');
+    closeBook();
+  };
+  document.getElementById('promptJustLeave').onclick = function(){
+    document.getElementById('bookmarkPrompt').classList.remove('open');
+    closeBook();
+  };
+  document.getElementById('promptStay').onclick = function(){
+    document.getElementById('bookmarkPrompt').classList.remove('open');
+  };
+  document.getElementById('bookmarkPrompt').onclick = function(e){
+    if (e.target === this) this.classList.remove('open');
+  };
 
   document.getElementById('settingsBtn').onclick = function(){
     document.getElementById('settings').classList.add('open');
     updateSettingsUI();
+    buildBookmarksList();
   };
   document.getElementById('closeSettings').onclick = function(){
     document.getElementById('settings').classList.remove('open');
@@ -1439,23 +1775,45 @@ body {
     if (e.target === this) this.classList.remove('open');
   };
 
-  // Reader navigation: tap & swipe
+  // Reader navigation: tap & swipe & long-press for bookmarks
   var paper = document.getElementById('paper');
   var startX = 0, startY = 0, startT = 0, moved = false;
+  var longPressTimer = null;
+  var longPressFired = false;
+  var LONG_PRESS_MS = 550;
+  var LONG_PRESS_TOLERANCE = 10;
 
   paper.addEventListener('touchstart', function(e){
     var t = e.touches[0];
     startX = t.clientX; startY = t.clientY;
     startT = (new Date()).getTime();
     moved = false;
+    longPressFired = false;
+    if (longPressTimer) clearTimeout(longPressTimer);
+    var x = t.clientX, y = t.clientY;
+    longPressTimer = setTimeout(function(){
+      longPressTimer = null;
+      if (currentBook === null) return;
+      if (moved) return;
+      longPressFired = true;
+      showLongPressPulse(x, y);
+      toggleBookmark(currentPage);
+    }, LONG_PRESS_MS);
   }, false);
 
   paper.addEventListener('touchmove', function(e){
     var t = e.touches[0];
-    if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) moved = true;
+    if (Math.abs(t.clientX - startX) > LONG_PRESS_TOLERANCE ||
+        Math.abs(t.clientY - startY) > LONG_PRESS_TOLERANCE) {
+      moved = true;
+      if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    }
   }, false);
 
   paper.addEventListener('touchend', function(e){
+    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    if (longPressFired) { longPressFired = false; return; }
+
     var t = e.changedTouches[0];
     var dx = t.clientX - startX;
     var dy = t.clientY - startY;
@@ -1474,6 +1832,11 @@ body {
       else if (x > w * 0.68) goToPage(currentPage + 1, true);
       else flashUI();
     }
+  }, false);
+
+  paper.addEventListener('touchcancel', function(){
+    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+    longPressFired = false;
   }, false);
 
   // mouse fallback (desktop preview)
@@ -1566,6 +1929,43 @@ body {
     for (var j = 0; j < fonts.length; j++) {
       if (parseInt(fonts[j].getAttribute('data-font'),10) === prefs.fontIdx) fonts[j].classList.add('active');
       else fonts[j].classList.remove('active');
+    }
+  }
+
+  function buildBookmarksList(){
+    var list = document.getElementById('bookmarksList');
+    if (!list) return;
+    list.innerHTML = '';
+    if (currentBook === null) {
+      list.innerHTML = '<div class="bookmarks-empty">Open a book first.</div>';
+      return;
+    }
+    var book = books[currentBook];
+    var marks = (book && book.bookmarks) ? book.bookmarks : [];
+    if (marks.length === 0) {
+      list.innerHTML = '<div class="bookmarks-empty">No bookmarks yet.<br/>Long-press the page to mark a spot.</div>';
+      return;
+    }
+    for (var i = 0; i < marks.length; i++) {
+      (function(p){
+        var item = document.createElement('div');
+        item.className = 'bookmark-item';
+        item.innerHTML =
+          '<span class="mark">▌</span>' +
+          '<span class="page">Page ' + (p + 1) + '</span>' +
+          '<button class="remove" aria-label="Remove">×</button>';
+        item.onclick = function(e){
+          if (e.target.classList.contains('remove')) {
+            e.stopPropagation();
+            toggleBookmark(p);
+            buildBookmarksList();
+            return;
+          }
+          document.getElementById('settings').classList.remove('open');
+          goToPage(p, true);
+        };
+        list.appendChild(item);
+      })(marks[i]);
     }
   }
 
