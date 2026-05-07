@@ -1,6 +1,6 @@
 // Old Bookcase Service Worker
 // Bump CACHE_VERSION when you update files to force a refresh.
-const CACHE_VERSION = 'old-bookcase-v6';
+const CACHE_VERSION = 'old-bookcase-v7';
 const ASSETS = [
   './',
   './index.html',

@@ -462,11 +462,11 @@ body {
 /* Bookmark ribbon */
 .bookmark-ribbon {
   position: absolute;
-  top: 0;
-  top: env(safe-area-inset-top);
-  right: 28px;
-  width: 26px;
-  height: 44px;
+  top: 56px;
+  top: calc(56px + env(safe-area-inset-top));
+  right: 16px;
+  width: 22px;
+  height: 36px;
   z-index: 6;
   display: none;
   pointer-events: none;
