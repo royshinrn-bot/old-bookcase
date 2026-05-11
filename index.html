@@ -2458,6 +2458,8 @@ body {
       })(i);
     }
   })();
+
+  document.getElementById('deleteBtn').onclick = function(){
     if (currentBook === null) return;
     if (!confirm('Remove this book from the shelf?')) return;
     var b = books[currentBook];
