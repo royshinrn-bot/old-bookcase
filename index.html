@@ -759,6 +759,8 @@ body {
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-column-gap: 56px;
   column-gap: 56px;
+  -webkit-column-fill: auto;
+  column-fill: auto;
 }
 
 .reader-toolbar {
@@ -1758,21 +1760,43 @@ body {
     if (w <= 0 || h <= 0) return;
     pageStep = w + 56;
 
-    // Snap height to a multiple of line-height so columns never cut through a line
-    var lineH = parseFloat(window.getComputedStyle(content).lineHeight);
+    // Measure the ACTUAL rendered line height by creating a test element
+    // with identical font properties — 8 lines averaged for accuracy
+    var cs = window.getComputedStyle(content);
+    var testDiv = document.createElement('div');
+    testDiv.style.cssText =
+      'position:absolute;visibility:hidden;pointer-events:none;' +
+      'top:0;left:-9999px;width:' + w + 'px;' +
+      'font-family:' + cs.fontFamily + ';' +
+      'font-size:' + cs.fontSize + ';' +
+      'line-height:' + cs.lineHeight + ';' +
+      'white-space:pre;';
+    var sample = [];
+    for (var k = 0; k < 8; k++) sample.push('Sample line');
+    testDiv.textContent = sample.join('\n');
+    document.body.appendChild(testDiv);
+    var measuredH = testDiv.getBoundingClientRect().height;
+    document.body.removeChild(testDiv);
+
+    var lineH = (measuredH > 0) ? (measuredH / 8) : 0;
     if (!lineH || isNaN(lineH) || lineH <= 0) {
-      lineH = prefs.fontSize * (LINE_STEPS[prefs.lineIdx] || 1.7);
+      lineH = parseFloat(cs.lineHeight) ||
+              prefs.fontSize * (LINE_STEPS[prefs.lineIdx] || 1.7);
     }
-    var snappedH = Math.floor(h / lineH) * lineH;
-    if (snappedH < lineH) snappedH = lineH;
+
+    // Snap column height to exact multiple of line height
+    var linesPerPage = Math.floor(h / lineH);
+    if (linesPerPage < 1) linesPerPage = 1;
+    var snappedH = linesPerPage * lineH;
 
     content.style.height = snappedH + 'px';
     content.style.width = w + 'px';
     content.style.webkitColumnWidth = w + 'px';
     content.style.columnWidth = w + 'px';
+
     var total = content.scrollWidth;
     pageCount = Math.max(1, Math.round(total / pageStep));
-    // Map chapter positions to page numbers
+
     if (currentBook !== null && books[currentBook] && books[currentBook].chapters) {
       mapChaptersToPages(books[currentBook].chapters);
     }
