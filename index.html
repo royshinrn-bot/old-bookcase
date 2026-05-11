@@ -1266,6 +1266,11 @@ body {
     </div>
 
     <div style="margin-top:10px;">
+      <div class="label" style="font-style:italic;font-size:13px;margin-bottom:4px;">Alignment</div>
+      <div class="font-row" id="alignRow"></div>
+    </div>
+
+    <div style="margin-top:10px;">
       <div class="label" style="font-style:italic;font-size:13px;margin-bottom:4px;">Font</div>
       <div class="font-row" id="fontRow"></div>
     </div>
@@ -1447,7 +1452,8 @@ body {
         fontSize:  p.fontSize  || 18,
         themeIdx:  themeIdx,
         fontIdx:   (typeof p.fontIdx === 'number') ? p.fontIdx : 0,
-        lineIdx:   (typeof p.lineIdx === 'number') ? p.lineIdx : 2
+        lineIdx:   (typeof p.lineIdx === 'number') ? p.lineIdx : 2,
+        alignIdx:  (typeof p.alignIdx === 'number') ? p.alignIdx : 0
       };
     } catch(e){ return { fontSize: 18, themeIdx: 0, fontIdx: 0, lineIdx: 2 }; }
   }
@@ -1673,9 +1679,13 @@ body {
       setContentWithChapters(book.content, book.chapters || []);
       var content = document.getElementById('content');
       var f = FONTS[prefs.fontIdx] || FONTS[0];
-      content.style.fontFamily = f.stack;
-      content.style.fontSize = prefs.fontSize + 'px';
-      content.style.lineHeight = LINE_STEPS[prefs.lineIdx] || 1.7;
+      var align = ALIGNS[prefs.alignIdx] || ALIGNS[0];
+      content.style.fontFamily  = f.stack;
+      content.style.fontSize    = prefs.fontSize + 'px';
+      content.style.lineHeight  = LINE_STEPS[prefs.lineIdx] || 1.7;
+      content.style.textAlign   = align.value;
+      content.style.webkitTextAlignLast = 'left';
+      content.style.textAlignLast       = 'left';
       content.style.webkitTransform = 'translate3d(0,0,0)';
       content.style.transform = 'translate3d(0,0,0)';
       setTimeout(function(){
@@ -1900,9 +1910,14 @@ body {
   function applyFont(){
     var content = document.getElementById('content');
     var f = FONTS[prefs.fontIdx] || FONTS[0];
-    content.style.fontFamily = f.stack;
-    content.style.fontSize = prefs.fontSize + 'px';
-    content.style.lineHeight = LINE_STEPS[prefs.lineIdx] || 1.7;
+    var align = ALIGNS[prefs.alignIdx] || ALIGNS[0];
+    content.style.fontFamily  = f.stack;
+    content.style.fontSize    = prefs.fontSize + 'px';
+    content.style.lineHeight  = LINE_STEPS[prefs.lineIdx] || 1.7;
+    content.style.textAlign   = align.value;
+    // For justify: last line of each paragraph stays left-aligned
+    content.style.webkitTextAlignLast = (align.value === 'justify') ? 'left' : 'left';
+    content.style.textAlignLast       = (align.value === 'justify') ? 'left' : 'left';
     if (currentBook !== null) {
       setTimeout(function(){
         paginate();
@@ -2420,7 +2435,29 @@ body {
     }
   })();
 
-  document.getElementById('deleteBtn').onclick = function(){
+  var ALIGNS = [
+    { name: '≡  Left',    value: 'left'    },
+    { name: '≡  Justify', value: 'justify' }
+  ];
+
+  (function buildAligns(){
+    var row = document.getElementById('alignRow');
+    for (var i = 0; i < ALIGNS.length; i++) {
+      (function(idx){
+        var btn = document.createElement('button');
+        btn.className = 'font-btn';
+        btn.setAttribute('data-align', idx);
+        btn.textContent = ALIGNS[idx].name;
+        btn.onclick = function(){
+          prefs.alignIdx = idx;
+          savePrefs();
+          applyFont();
+          updateSettingsUI();
+        };
+        row.appendChild(btn);
+      })(i);
+    }
+  })();
     if (currentBook === null) return;
     if (!confirm('Remove this book from the shelf?')) return;
     var b = books[currentBook];
@@ -2439,6 +2476,11 @@ body {
     for (var i = 0; i < swatches.length; i++) {
       if (parseInt(swatches[i].getAttribute('data-theme'),10) === prefs.themeIdx) swatches[i].classList.add('active');
       else swatches[i].classList.remove('active');
+    }
+    var aligns = document.querySelectorAll('[data-align]');
+    for (var k = 0; k < aligns.length; k++) {
+      if (parseInt(aligns[k].getAttribute('data-align'), 10) === prefs.alignIdx) aligns[k].classList.add('active');
+      else aligns[k].classList.remove('active');
     }
     var fonts = document.querySelectorAll('.font-btn');
     for (var j = 0; j < fonts.length; j++) {
