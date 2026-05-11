@@ -1757,7 +1757,16 @@ body {
     var h = wrap.clientHeight;
     if (w <= 0 || h <= 0) return;
     pageStep = w + 56;
-    content.style.height = h + 'px';
+
+    // Snap height to a multiple of line-height so columns never cut through a line
+    var lineH = parseFloat(window.getComputedStyle(content).lineHeight);
+    if (!lineH || isNaN(lineH) || lineH <= 0) {
+      lineH = prefs.fontSize * (LINE_STEPS[prefs.lineIdx] || 1.7);
+    }
+    var snappedH = Math.floor(h / lineH) * lineH;
+    if (snappedH < lineH) snappedH = lineH;
+
+    content.style.height = snappedH + 'px';
     content.style.width = w + 'px';
     content.style.webkitColumnWidth = w + 'px';
     content.style.columnWidth = w + 'px';
