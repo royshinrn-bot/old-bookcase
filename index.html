@@ -37,17 +37,13 @@ body {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background-color: #e8d5a8;
   background-image:
-    /* soft warm light from top */
     radial-gradient(ellipse at 50% -10%, rgba(255,240,200,0.55) 0%, transparent 55%),
-    /* subtle vignette at bottom */
     radial-gradient(ellipse at 50% 110%, rgba(120,80,40,0.18) 0%, transparent 55%),
-    /* fine vertical grain lines */
     repeating-linear-gradient(90deg,
       rgba(120,80,40,0.05) 0px,
       rgba(120,80,40,0.05) 1px,
       transparent 1px,
       transparent 4px),
-    /* wider warm/cool wood bands */
     repeating-linear-gradient(90deg,
       rgba(180,130,70,0.08) 0px,
       rgba(180,130,70,0.08) 18px,
@@ -55,13 +51,11 @@ body {
       rgba(220,180,120,0.05) 42px,
       rgba(140,90,45,0.07) 42px,
       rgba(140,90,45,0.07) 70px),
-    /* very gentle horizontal wave (like wood swirl) */
     repeating-linear-gradient(2deg,
       rgba(160,110,60,0.04) 0px,
       rgba(160,110,60,0.04) 80px,
       transparent 80px,
       transparent 160px),
-    /* base cream wash */
     linear-gradient(180deg, #f4e4c1 0%, #e8d2a0 50%, #d8bd82 100%);
   display: -webkit-box; display: -webkit-flex; display: flex;
   -webkit-flex-direction: column; flex-direction: column;
@@ -72,7 +66,6 @@ body {
 .shelf-view::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  /* knot / age spots */
   background-image:
     radial-gradient(ellipse 60px 12px at 18% 22%, rgba(120,70,30,0.10), transparent 70%),
     radial-gradient(ellipse 90px 16px at 78% 48%, rgba(140,90,40,0.08), transparent 70%),
@@ -161,80 +154,146 @@ body {
 .shelf-books {
   display: -webkit-flex; display: flex;
   -webkit-align-items: flex-end; align-items: flex-end;
-  min-height: 220px;
-  padding: 0 4px;
+  min-height: 230px;
+  padding: 0 6px 0 4px;
+  /* subtle shadow under books on plank */
+  position: relative;
+}
+/* ambient occlusion line just above plank */
+.shelf-books::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 6px;
+  background: linear-gradient(0deg, rgba(60,30,10,0.28) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .shelf-plank {
   height: 22px;
   background:
-    linear-gradient(180deg, #c9914a 0%, #a06d2a 45%, #6b4520 100%);
+    linear-gradient(180deg,
+      rgba(255,200,120,0.25) 0%,
+      #c9914a 4%,
+      #a06d2a 45%,
+      #6b4520 100%);
   position: relative;
   border-radius: 1px;
   box-shadow:
     inset 0 1px 0 rgba(255,230,180,0.5),
     inset 0 -2px 4px rgba(60,30,10,0.5),
-    0 6px 14px rgba(120,80,40,0.4);
+    0 6px 14px rgba(120,80,40,0.45),
+    0 2px 4px rgba(80,50,20,0.4);
 }
 .shelf-plank::after {
   content: '';
   position: absolute; left: 4px; right: 4px; top: 8px;
   height: 1px;
-  background: rgba(60,30,10,0.3);
+  background: rgba(60,30,10,0.28);
 }
 
+/* ============= BOOK ============= */
 .book {
   -webkit-flex-shrink: 0; flex-shrink: 0;
-  width: 60px;
-  margin-right: 8px;
-  border-radius: 1px 3px 3px 1px;
+  /* width set inline */
+  margin-right: 6px;
+  border-radius: 1px 4px 4px 1px;
   position: relative;
   display: -webkit-flex; display: flex;
   -webkit-align-items: center; align-items: center;
   -webkit-justify-content: center; justify-content: center;
   cursor: pointer;
-  -webkit-transition: -webkit-transform 0.2s ease;
-  transition: transform 0.2s ease;
+  -webkit-transition: -webkit-transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-transform-origin: bottom center;
+  transform-origin: bottom center;
   box-shadow:
-    inset -3px 0 6px rgba(0,0,0,0.45),
-    inset 2px 0 0 rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.15),
-    inset 0 -1px 0 rgba(0,0,0,0.4),
-    3px 4px 8px rgba(0,0,0,0.45);
+    inset -4px 0 10px rgba(0,0,0,0.5),
+    inset 3px 0 0 rgba(255,255,255,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.45),
+    4px 6px 14px rgba(0,0,0,0.5),
+    1px 0 0 rgba(0,0,0,0.35);
   overflow: hidden;
+  /* left-edge highlight (binding) */
+  border-left: 3px solid rgba(0,0,0,0.35);
 }
+
+/* top-of-book pages visible edge */
 .book::before {
   content: '';
-  position: absolute; top: 5px; bottom: 5px; left: 4px; right: 4px;
-  border: 1px solid rgba(212,175,55,0.18);
-  border-radius: 1px;
+  position: absolute;
+  left: 3px; right: 0;
+  top: 0;
+  height: 5px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.55) 0%,
+    rgba(220,200,160,0.3) 60%,
+    transparent 100%);
+  z-index: 3;
   pointer-events: none;
 }
-.book::after {
-  content: '';
-  position: absolute; left: 0; right: 0;
-  top: 18%; height: 1px;
-  background: rgba(212,175,55,0.25);
-  box-shadow: 0 70px 0 rgba(212,175,55,0.18), 0 -10px 0 rgba(0,0,0,0.2);
+
+/* ---- decorative bands ---- */
+.book-band {
+  position: absolute;
+  left: 0; right: 0;
+  height: 10px;
+  pointer-events: none;
+  z-index: 2;
 }
-.book:active { -webkit-transform: translateY(-6px); transform: translateY(-6px); }
+.book-band-top {
+  top: 13px;
+  background: linear-gradient(180deg,
+    rgba(212,175,55,0.38) 0%,
+    rgba(212,175,55,0.14) 55%,
+    rgba(0,0,0,0.08) 100%);
+  border-top: 1px solid rgba(212,175,55,0.55);
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+}
+.book-band-bot {
+  bottom: 13px;
+  background: linear-gradient(0deg,
+    rgba(212,175,55,0.32) 0%,
+    rgba(212,175,55,0.10) 55%,
+    rgba(0,0,0,0.06) 100%);
+  border-bottom: 1px solid rgba(212,175,55,0.48);
+  border-top: 1px solid rgba(0,0,0,0.14);
+}
+
+/* ---- label area (center of spine) ---- */
+.book-label {
+  position: absolute;
+  left: 3px; right: 1px;
+  top: 14%; bottom: 14%;
+  background: rgba(0,0,0,0.10);
+  border-top: 1px solid rgba(212,175,55,0.18);
+  border-bottom: 1px solid rgba(212,175,55,0.18);
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: center; justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+}
 
 .book-spine {
   -webkit-writing-mode: vertical-rl;
   writing-mode: vertical-rl;
   -webkit-text-orientation: mixed;
   text-orientation: mixed;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   font-style: italic;
   font-family: "Hoefler Text", "Baskerville", Georgia, "AppleMyungjo", serif;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.7);
-  padding: 16px 0;
-  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  padding: 8px 0;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   overflow: hidden;
   max-height: 100%;
   text-overflow: ellipsis;
+  line-height: 1.1;
 }
 
 /* Empty state */
@@ -416,12 +475,53 @@ body {
   -webkit-flex-direction: column; flex-direction: column;
   z-index: 20;
 }
-.reader.open { display: -webkit-flex; display: flex; }
+.reader.open {
+  display: -webkit-flex; display: flex;
+  -webkit-animation: openReader 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: openReader 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+@-webkit-keyframes openReader {
+  from { opacity: 0; -webkit-transform: scale(0.97) translateY(8px); }
+  to   { opacity: 1; -webkit-transform: scale(1)    translateY(0);    }
+}
+@keyframes openReader {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* ---- Reading progress bar ---- */
+.reader-progress {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  z-index: 8;
+  background: rgba(0,0,0,0.07);
+}
+.reader-progress-bar {
+  height: 100%;
+  width: 0%;
+  -webkit-transition: width 0.35s ease;
+  transition: width 0.35s ease;
+  background: rgba(139,105,20,0.5);
+}
 
 .reader-paper {
   -webkit-flex: 1; flex: 1;
   position: relative;
   overflow: hidden;
+}
+
+/* Page vignette — depth/paper feel */
+.reader-paper::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 0% 50%,   rgba(0,0,0,0.07) 0%, transparent 40%),
+    radial-gradient(ellipse at 100% 50%,  rgba(0,0,0,0.07) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 0%,    rgba(0,0,0,0.06) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 100%,  rgba(0,0,0,0.06) 0%, transparent 35%);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .reader-content-wrap {
@@ -481,7 +581,7 @@ body {
 @-webkit-keyframes ribbonIn { from { -webkit-transform: translateY(-16px); opacity: 0; } to { -webkit-transform: translateY(0); opacity: 1; } }
 @keyframes ribbonIn { from { transform: translateY(-16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-/* Long-press indicator (subtle pulse) */
+/* Long-press pulse */
 .long-press-pulse {
   position: absolute;
   border-radius: 50%;
@@ -609,7 +709,6 @@ body {
 }
 .ribbon-icon { color: #fff; margin-right: 6px; }
 
-/* Bookmark prompt modal (asked when leaving) */
 .prompt-text {
   margin: 14px 0 6px;
   line-height: 1.65;
@@ -646,6 +745,7 @@ body {
   border-color: #a01f1f;
 }
 .prompt-btn:active { opacity: 0.7; }
+
 .reader-content {
   font-family: "Hoefler Text", "Baskerville", "Iowan Old Style", Georgia, "AppleMyungjo", serif;
   font-size: 18px;
@@ -670,7 +770,7 @@ body {
   -webkit-align-items: center; align-items: center;
   -webkit-justify-content: space-between; justify-content: space-between;
   padding-left: 8px; padding-right: 8px;
-  z-index: 5;
+  z-index: 6;
   opacity: 0;
   pointer-events: none;
   -webkit-transition: opacity 0.25s ease;
@@ -717,8 +817,8 @@ body {
   text-align: center;
   font-size: 10px;
   font-style: italic;
-  letter-spacing: 0.4em;
-  color: rgba(60,40,20,0.45);
+  letter-spacing: 0.5em;
+  color: rgba(60,40,20,0.4);
   z-index: 4;
 }
 
@@ -913,6 +1013,119 @@ body {
   border-radius: 2px;
 }
 
+/* ================ TOC PANEL ================ */
+.toc-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 9;
+  display: none;
+  -webkit-transition: background 0.28s ease;
+  transition: background 0.28s ease;
+}
+.toc-overlay.open {
+  display: block;
+  background: rgba(0,0,0,0.38);
+}
+.toc-panel {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 78%;
+  max-width: 290px;
+  background: #f4e8d0;
+  z-index: 10;
+  display: -webkit-flex; display: flex;
+  -webkit-flex-direction: column; flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.28);
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+  -webkit-transition: -webkit-transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: env(safe-area-inset-top);
+}
+.toc-panel.open {
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
+}
+.toc-header {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-between; justify-content: space-between;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(139,105,20,0.25);
+}
+.toc-title-label {
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  color: #6b4a14;
+}
+.toc-close {
+  width: 32px; height: 32px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #8b6914;
+  cursor: pointer;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 50%;
+}
+.toc-close:active { background: rgba(139,105,20,0.15); }
+.toc-list {
+  -webkit-flex: 1; flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0 20px;
+}
+.toc-item {
+  display: -webkit-flex; display: flex;
+  -webkit-align-items: baseline; align-items: baseline;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(139,105,20,0.1);
+}
+.toc-item:active { background: rgba(139,105,20,0.1); }
+.toc-item-num {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: #a07a25;
+  margin-right: 10px;
+  -webkit-flex-shrink: 0; flex-shrink: 0;
+  min-width: 24px;
+  font-style: normal;
+  margin-top: 2px;
+}
+.toc-item-title {
+  font-size: 14px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  -webkit-flex: 1; flex: 1;
+  color: #2a1810;
+}
+.toc-item-page {
+  font-size: 11px;
+  color: #a07a25;
+  margin-left: 8px;
+  -webkit-flex-shrink: 0; flex-shrink: 0;
+  font-style: normal;
+  letter-spacing: 0.05em;
+}
+.toc-empty {
+  padding: 32px 20px;
+  text-align: center;
+  font-style: italic;
+  font-size: 14px;
+  color: #8b6914;
+  line-height: 1.6;
+}
+
 /* fade transitions */
 .fade-in {
   -webkit-animation: fadeIn 0.3s ease;
@@ -956,7 +1169,7 @@ body {
       <span class="about-tag">old.bookcase.app@gmail.com</span>
     </p>
     <p class="about-section about-version">
-      v1.0 · Made with care.
+      v1.1 · Made with care.
     </p>
     <button class="close-btn" id="closeAbout">Close</button>
   </div>
@@ -964,6 +1177,7 @@ body {
 
 <!-- ============ READER ============ -->
 <div class="reader" id="reader">
+  <div class="reader-progress"><div class="reader-progress-bar" id="progressBar"></div></div>
   <div class="reader-paper" id="paper">
     <div class="reader-content-wrap" id="textWrap">
       <div class="reader-content" id="content"></div>
@@ -981,8 +1195,19 @@ body {
   </div>
   <div class="reader-toolbar">
     <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+    <button class="icon-btn toc-btn" id="tocBtn" aria-label="Contents" style="display:none;font-size:22px;">☰</button>
     <span class="reader-title" id="readerTitle"></span>
     <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+  </div>
+
+  <!-- TOC overlay + panel -->
+  <div class="toc-overlay" id="tocOverlay"></div>
+  <div class="toc-panel" id="tocPanel">
+    <div class="toc-header">
+      <span class="toc-title-label">Contents</span>
+      <button class="toc-close" id="closeToc">&#x2715;</button>
+    </div>
+    <div class="toc-list" id="tocList"></div>
   </div>
   <div class="page-info" id="pageInfo">— · —</div>
 </div>
@@ -1084,7 +1309,6 @@ body {
   var IDB_VERSION = 1;
   var PDFJS_BASE  = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
 
-  // IndexedDB helpers (used for storing PDF binaries)
   function idbOpen(){
     return new Promise(function(resolve, reject){
       var req = indexedDB.open(IDB_NAME, IDB_VERSION);
@@ -1127,7 +1351,6 @@ body {
     });
   }
 
-  // Lazy-load PDF.js the first time a PDF is opened
   var pdfjsLoading = null;
   function loadPdfJs(){
     if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
@@ -1147,48 +1370,38 @@ body {
     return pdfjsLoading;
   }
 
-  // Leather spine palette (Pantone-inspired, 28 variations)
+  // Leather spine palette (28 variations)
   var COLORS = [
-    // — Reds / Burgundies —
     { bg: 'linear-gradient(90deg,#4a1a20 0%,#722F37 50%,#3a141a 100%)', label: 'rgba(220,180,100,0.92)' },
     { bg: 'linear-gradient(90deg,#5c1f25 0%,#8c3540 50%,#4a161c 100%)', label: 'rgba(225,190,130,0.92)' },
     { bg: 'linear-gradient(90deg,#7a2828 0%,#a83838 50%,#5e1f1f 100%)', label: 'rgba(245,225,170,0.92)' },
     { bg: 'linear-gradient(90deg,#6b2818 0%,#8c3a23 50%,#511e10 100%)', label: 'rgba(240,210,150,0.92)' },
-    // — Oranges / Rust —
     { bg: 'linear-gradient(90deg,#5c2a14 0%,#9c4d20 50%,#4a210e 100%)', label: 'rgba(240,210,150,0.92)' },
     { bg: 'linear-gradient(90deg,#7a3a1a 0%,#a85328 50%,#5c2a13 100%)', label: 'rgba(245,225,180,0.92)' },
-    // — Greens —
     { bg: 'linear-gradient(90deg,#1a3024 0%,#2F4F2F 50%,#162519 100%)', label: 'rgba(220,200,140,0.92)' },
     { bg: 'linear-gradient(90deg,#1e3a30 0%,#345448 50%,#162a22 100%)', label: 'rgba(220,205,160,0.92)' },
     { bg: 'linear-gradient(90deg,#2c4a30 0%,#456a45 50%,#243a26 100%)', label: 'rgba(230,215,170,0.92)' },
     { bg: 'linear-gradient(90deg,#3a4828 0%,#5a6c3c 50%,#2c3820 100%)', label: 'rgba(235,220,170,0.92)' },
     { bg: 'linear-gradient(90deg,#2a3a3a 0%,#4a6a6a 50%,#1f2c2c 100%)', label: 'rgba(220,200,160,0.92)' },
-    // — Blues —
     { bg: 'linear-gradient(90deg,#0f2236 0%,#1B3A5C 50%,#0a1828 100%)', label: 'rgba(220,200,140,0.92)' },
     { bg: 'linear-gradient(90deg,#162e4a 0%,#2a4a72 50%,#0e2138 100%)', label: 'rgba(225,210,160,0.92)' },
     { bg: 'linear-gradient(90deg,#1e3a52 0%,#2f5a7c 50%,#162a3a 100%)', label: 'rgba(230,215,170,0.92)' },
     { bg: 'linear-gradient(90deg,#2c4858 0%,#456c80 50%,#1f3540 100%)', label: 'rgba(225,210,170,0.92)' },
-    // — Purples —
     { bg: 'linear-gradient(90deg,#1f1a25 0%,#3d3340 50%,#15111d 100%)', label: 'rgba(200,170,110,0.92)' },
     { bg: 'linear-gradient(90deg,#2a1f3a 0%,#48386a 50%,#1e1530 100%)', label: 'rgba(210,185,140,0.92)' },
     { bg: 'linear-gradient(90deg,#3a2840 0%,#5a4068 50%,#281c2e 100%)', label: 'rgba(220,200,170,0.92)' },
-    // — Golds / Mustards —
     { bg: 'linear-gradient(90deg,#6b4f15 0%,#a07a25 50%,#523d10 100%)', label: 'rgba(40,25,10,0.85)'   },
     { bg: 'linear-gradient(90deg,#7a5f1a 0%,#b08a30 50%,#5c4514 100%)', label: 'rgba(50,30,10,0.85)'   },
     { bg: 'linear-gradient(90deg,#8c6b1f 0%,#c0942e 50%,#6e5318 100%)', label: 'rgba(45,25,5,0.85)'    },
-    // — Browns / Leathers —
     { bg: 'linear-gradient(90deg,#3a2820 0%,#5C4033 50%,#2a1c14 100%)', label: 'rgba(220,190,130,0.92)' },
     { bg: 'linear-gradient(90deg,#4a3325 0%,#6a4f3a 50%,#322218 100%)', label: 'rgba(230,200,150,0.92)' },
     { bg: 'linear-gradient(90deg,#5a4435 0%,#7a5c45 50%,#3e2e23 100%)', label: 'rgba(240,215,170,0.92)' },
     { bg: 'linear-gradient(90deg,#2a1f14 0%,#3e2e1f 50%,#1a120a 100%)', label: 'rgba(220,185,130,0.92)' },
-    // — Greys / Charcoals —
     { bg: 'linear-gradient(90deg,#2a2a2c 0%,#4a4a4d 50%,#1a1a1c 100%)', label: 'rgba(220,210,180,0.92)' },
     { bg: 'linear-gradient(90deg,#383a3c 0%,#5a5d61 50%,#26282a 100%)', label: 'rgba(225,215,180,0.92)' },
-    // — Coral —
     { bg: 'linear-gradient(90deg,#7c3a3a 0%,#a85a5a 50%,#5c2a2a 100%)', label: 'rgba(245,225,200,0.92)' }
   ];
 
-  // Reading themes (background + text color). White first as requested.
   var THEMES = [
     { name: 'White',  bg: '#ffffff', fg: '#1a1a1a' },
     { name: 'Paper',  bg: '#f4e8d0', fg: '#2a1810' },
@@ -1198,7 +1411,6 @@ body {
     { name: 'Black',  bg: '#000000', fg: '#c8c8c8' }
   ];
 
-  // Reading fonts
   var FONTS = [
     { name: 'Old',     stack: '"Hoefler Text", "Baskerville", "AppleMyungjo", "Nanum Myeongjo", serif' },
     { name: 'Book',    stack: 'Georgia, "Iowan Old Style", "AppleMyungjo", "Nanum Myeongjo", serif' },
@@ -1207,7 +1419,6 @@ body {
     { name: '고딕',    stack: '"Apple SD Gothic Neo", "Nanum Gothic", "Helvetica Neue", sans-serif' }
   ];
 
-  // Line height steps
   var LINE_STEPS = [1.4, 1.55, 1.7, 1.85, 2.0, 2.2];
 
   function loadBooks(){
@@ -1223,18 +1434,17 @@ body {
     try {
       var s = localStorage.getItem(STORE_PREFS);
       var p = s ? JSON.parse(s) : {};
-      // legacy mode mapping
       var themeIdx = (typeof p.themeIdx === 'number') ? p.themeIdx : null;
       if (themeIdx === null) {
         if (p.mode === 'sepia') themeIdx = 2;
         else if (p.mode === 'night') themeIdx = 4;
-        else themeIdx = 0; // White default
+        else themeIdx = 0;
       }
       return {
         fontSize:  p.fontSize  || 18,
         themeIdx:  themeIdx,
         fontIdx:   (typeof p.fontIdx === 'number') ? p.fontIdx : 0,
-        lineIdx:   (typeof p.lineIdx === 'number') ? p.lineIdx : 2  // 1.7
+        lineIdx:   (typeof p.lineIdx === 'number') ? p.lineIdx : 2
       };
     } catch(e){ return { fontSize: 18, themeIdx: 0, fontIdx: 0, lineIdx: 2 }; }
   }
@@ -1251,16 +1461,58 @@ body {
   var pageStep = 0;
   var uiTimer = null;
   var openedAtPage = 0;
+  var lastPageSaveTimer = null;
 
-  // RENDER BOOKSHELF
+  function saveLastPage(){
+    if (currentBook === null) return;
+    books[currentBook].lastPage = currentPage;
+    saveBooks();
+  }
+  function scheduleLastPageSave(){
+    if (lastPageSaveTimer) clearTimeout(lastPageSaveTimer);
+    lastPageSaveTimer = setTimeout(saveLastPage, 800);
+  }
+
+  // ============ BOOK WIDTH & TILT HELPERS ============
+  function calcBookWidth(book) {
+    var base;
+    if (book.content) {
+      var len = book.content.length;
+      if      (len <   8000) base = 36;
+      else if (len <  25000) base = 44;
+      else if (len <  80000) base = 52;
+      else if (len < 200000) base = 62;
+      else if (len < 500000) base = 70;
+      else                   base = 76;
+    } else {
+      // PDF: seeded medium width
+      base = 46 + ((book.color || 0) * 5 + (book.size || 0) * 9) % 22;
+    }
+    // ±5px variation seeded by book properties
+    var variation = ((book.color || 0) * 11 + (book.size || 0) * 17) % 11 - 5;
+    return Math.max(34, Math.min(80, base + variation));
+  }
+
+  function calcBookTilt(book, index) {
+    var seed = (book.color || 0) * 7 + index * 13 + (book.size || 0) * 3;
+    // ~28% of books get a subtle tilt
+    if (seed % 18 < 5) {
+      var dir  = (seed % 2 === 0) ? 1 : -1;
+      var mag  = 0.6 + (seed % 4) * 0.45; // 0.6 – 1.95 deg
+      return dir * mag;
+    }
+    return 0;
+  }
+
+  // ============ RENDER BOOKSHELF ============
   function calcPerShelf(){
     var shelves = document.getElementById('shelves');
     var w = (shelves && shelves.clientWidth) ? shelves.clientWidth : window.innerWidth;
-    // book width 60 + margin 8 = 68 per book
-    var available = w - 16;
-    var n = Math.floor(available / 68);
+    var available = w - 20;
+    // estimate: avg book 54px + 6px margin = 60
+    var n = Math.floor(available / 60);
     if (n < 3) n = 3;
-    if (n > 8) n = 8;
+    if (n > 9) n = 9;
     return n;
   }
 
@@ -1299,16 +1551,63 @@ body {
   function makeBookEl(book, index){
     var el = document.createElement('div');
     el.className = 'book';
-    var color = COLORS[(book.color || 0) % COLORS.length];
-    var heightPx = 180 + ((book.size || 0) % 5) * 10;
-    el.style.height = heightPx + 'px';
+
+    var color    = COLORS[(book.color || 0) % COLORS.length];
+    var heightPx = 175 + ((book.size || 0) % 6) * 9;   // 175–220px
+    var widthPx  = calcBookWidth(book);
+    var tiltDeg  = calcBookTilt(book, index);
+
+    el.style.height     = heightPx + 'px';
+    el.style.width      = widthPx  + 'px';
     el.style.background = color.bg;
 
+    if (tiltDeg !== 0) {
+      el.style.webkitTransformOrigin = 'bottom center';
+      el.style.transformOrigin = 'bottom center';
+      el.style.webkitTransform = 'rotate(' + tiltDeg + 'deg)';
+      el.style.transform = 'rotate(' + tiltDeg + 'deg)';
+      // small horizontal nudge so tilted books don't overlap awkwardly
+      el.style.marginRight = (Math.abs(tiltDeg) * 1.5 + 6) + 'px';
+    }
+
+    // Touch: lift animation respecting existing tilt
+    el.addEventListener('touchstart', function(){
+      el.style.webkitTransition = '-webkit-transform 0.18s cubic-bezier(0.34,1.56,0.64,1)';
+      el.style.transition       = 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1)';
+      el.style.webkitTransform  = 'rotate(' + tiltDeg + 'deg) translateY(-9px)';
+      el.style.transform        = 'rotate(' + tiltDeg + 'deg) translateY(-9px)';
+    }, { passive: true });
+    el.addEventListener('touchend', function(){
+      el.style.webkitTransform = 'rotate(' + tiltDeg + 'deg) translateY(0)';
+      el.style.transform       = 'rotate(' + tiltDeg + 'deg) translateY(0)';
+    }, { passive: true });
+    el.addEventListener('touchcancel', function(){
+      el.style.webkitTransform = 'rotate(' + tiltDeg + 'deg) translateY(0)';
+      el.style.transform       = 'rotate(' + tiltDeg + 'deg) translateY(0)';
+    }, { passive: true });
+
+    // Decorative top band
+    var bandTop = document.createElement('div');
+    bandTop.className = 'book-band book-band-top';
+    el.appendChild(bandTop);
+
+    // Label area with spine title
+    var label = document.createElement('div');
+    label.className = 'book-label';
     var spine = document.createElement('div');
     spine.className = 'book-spine';
     spine.style.color = color.label;
+    // Adjust font size for narrow books
+    if (widthPx < 44) spine.style.fontSize = '12px';
+    else if (widthPx > 64) spine.style.fontSize = '16px';
     spine.textContent = book.title;
-    el.appendChild(spine);
+    label.appendChild(spine);
+    el.appendChild(label);
+
+    // Decorative bottom band
+    var bandBot = document.createElement('div');
+    bandBot.className = 'book-band book-band-bot';
+    el.appendChild(bandBot);
 
     el.onclick = function(){ openBook(index); };
     return el;
@@ -1318,10 +1617,19 @@ body {
   var pdfDoc = null;
   var pdfRenderTask = null;
 
+  function updateProgressBar(){
+    var bar = document.getElementById('progressBar');
+    if (!bar) return;
+    var pct = pageCount > 1 ? (currentPage / (pageCount - 1)) * 100 : 100;
+    bar.style.width = pct + '%';
+    // Color: gold for dark themes, warm brown for light
+    var isDark = (prefs.themeIdx >= 4);
+    bar.style.background = isDark ? 'rgba(212,175,55,0.75)' : 'rgba(100,60,20,0.38)';
+  }
+
   function openBook(index){
     currentBook = index;
     var book = books[index];
-    // Always reset state immediately to avoid stale page from previous book
     currentPage = 0;
     pageCount = 1;
 
@@ -1334,13 +1642,16 @@ body {
     var textWrap = document.getElementById('textWrap');
     var pdfWrap  = document.getElementById('pdfWrap');
 
-    // Determine starting page: most recent bookmark, else page 0
+    // Start from last saved position; fall back to last bookmark, then page 0
     var startPage = 0;
-    if (book.bookmarks && book.bookmarks.length > 0) {
+    if (typeof book.lastPage === 'number') {
+      startPage = book.lastPage;
+    } else if (book.bookmarks && book.bookmarks.length > 0) {
       startPage = book.bookmarks[book.bookmarks.length - 1];
     }
 
     if (book.type === 'pdf') {
+      document.getElementById('tocBtn').style.display = 'none';
       textWrap.classList.add('hide');
       pdfWrap.classList.add('show');
       openPDF(book, startPage);
@@ -1348,13 +1659,20 @@ body {
       pdfWrap.classList.remove('show');
       textWrap.classList.remove('hide');
       document.getElementById('content').textContent = book.content;
-      // Apply font styles directly (don't rely on applyFont's deferred paginate)
+      // Detect chapters on first open and save
+      if (book.type === 'txt' && typeof book.chapters === 'undefined') {
+        book.chapters = detectChapters(book.content);
+        saveBooks();
+      }
+      var tocBtn = document.getElementById('tocBtn');
+      if (book.chapters && book.chapters.length > 0) tocBtn.style.display = '';
+      else tocBtn.style.display = 'none';
+      setContentWithChapters(book.content, book.chapters || []);
       var content = document.getElementById('content');
       var f = FONTS[prefs.fontIdx] || FONTS[0];
       content.style.fontFamily = f.stack;
       content.style.fontSize = prefs.fontSize + 'px';
       content.style.lineHeight = LINE_STEPS[prefs.lineIdx] || 1.7;
-      // Reset transform so we start clean
       content.style.webkitTransform = 'translate3d(0,0,0)';
       content.style.transform = 'translate3d(0,0,0)';
       setTimeout(function(){
@@ -1389,6 +1707,7 @@ body {
       wrap.classList.remove('loading');
       renderPDFPage(currentPage);
       updateBookmarkRibbon();
+      updateProgressBar();
       flashUI();
     }).catch(function(err){
       wrap.classList.remove('loading');
@@ -1423,6 +1742,7 @@ body {
 
   function closeBook(){
     document.getElementById('reader').classList.remove('open');
+    hideTOC();
     if (pdfRenderTask) { try { pdfRenderTask.cancel(); } catch(e){} }
     pdfDoc = null;
     pdfRenderTask = null;
@@ -1432,21 +1752,20 @@ body {
   function paginate(){
     var content = document.getElementById('content');
     var wrap = content.parentNode;
-
     var w = wrap.clientWidth;
     var h = wrap.clientHeight;
     if (w <= 0 || h <= 0) return;
-
-    pageStep = w + 56; // column width + column gap
-
+    pageStep = w + 56;
     content.style.height = h + 'px';
     content.style.width = w + 'px';
     content.style.webkitColumnWidth = w + 'px';
     content.style.columnWidth = w + 'px';
-
-    // force reflow then measure
     var total = content.scrollWidth;
     pageCount = Math.max(1, Math.round(total / pageStep));
+    // Map chapter positions to page numbers
+    if (currentBook !== null && books[currentBook] && books[currentBook].chapters) {
+      mapChaptersToPages(books[currentBook].chapters);
+    }
   }
 
   function goToPage(p, animate){
@@ -1467,8 +1786,9 @@ body {
       content.style.transform = 'translate3d(' + x + 'px,0,0)';
       document.getElementById('pageInfo').textContent = (p + 1) + ' · ' + pageCount;
     }
-    // Bookmarks are manual; we no longer auto-save current page.
     updateBookmarkRibbon();
+    updateProgressBar();
+    scheduleLastPageSave();
   }
 
   function flashUI(){
@@ -1480,7 +1800,7 @@ body {
     }, 2600);
   }
 
-  // ============ BOOKMARKS (manual) ============
+  // ============ BOOKMARKS ============
   function toggleBookmark(page){
     if (currentBook === null) return;
     var book = books[currentBook];
@@ -1517,7 +1837,6 @@ body {
     pulse.style.left = (x - rect.left) + 'px';
     pulse.style.top  = (y - rect.top)  + 'px';
     pulse.classList.remove('active');
-    // force reflow to restart animation
     void pulse.offsetWidth;
     pulse.classList.add('active');
   }
@@ -1540,7 +1859,8 @@ body {
       toolbar.style.background = 'linear-gradient(180deg, ' + hexToRgba(t.bg, 0.95) + ' 0%, ' + hexToRgba(t.bg, 0) + ' 100%)';
     }
     var info = document.getElementById('pageInfo');
-    if (info) info.style.color = hexToRgba(t.fg, 0.5);
+    if (info) info.style.color = hexToRgba(t.fg, 0.4);
+    updateProgressBar();
   }
 
   function applyFont(){
@@ -1557,7 +1877,154 @@ body {
     }
   }
 
-  // ============ ADD BOOK ============
+  // ============ CHAPTER DETECTION + TOC ============
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function detectChapters(text) {
+    var chapters = [];
+    var lines = text.split('\n');
+    var charPos = 0;
+
+    var patterns = [
+      // English
+      /^(chapter|챕터)\s*[\d]+/i,
+      /^(chapter)\s+[ivxlcdmIVXLCDM]+[\s\.]/i,
+      /^(part|section)\s*[\d]+/i,
+      /^(prologue|epilogue|preface|introduction|foreword|afterword|conclusion)[\s\.:,]?$/i,
+      /^[IVXLCDM]{1,6}\.\s+\S/,
+      /^\d{1,2}\.\s+[A-Z\uAC00-\uD7A3]/,
+      // Korean
+      /^제\s*\d+\s*[장부편절화]/,
+      /^\d+\s*[장부편절화]\s/,
+      /^(프롤로그|에필로그|머리말|서문|들어가며|나가며|맺음말|후기|작가의\s*말)/,
+    ];
+
+    for (var i = 0; i < lines.length; i++) {
+      var line    = lines[i];
+      var trimmed = line.replace(/^\s+/, '').replace(/\s+$/, '');
+
+      if (trimmed.length >= 2 && trimmed.length <= 120) {
+        var prevBlank = (i === 0) || (lines[i - 1].replace(/\s/g, '').length === 0);
+        var nextBlank = (i >= lines.length - 1) || (lines[i + 1].replace(/\s/g, '').length === 0);
+
+        if (prevBlank || nextBlank) {
+          for (var p = 0; p < patterns.length; p++) {
+            if (patterns[p].test(trimmed)) {
+              var leadingSpaces = line.length - line.replace(/^\s+/, '').length;
+              chapters.push({ title: trimmed, charIndex: charPos + leadingSpaces });
+              break;
+            }
+          }
+        }
+      }
+      charPos += line.length + 1;
+    }
+    return chapters;
+  }
+
+  function setContentWithChapters(text, chapters) {
+    var content = document.getElementById('content');
+    if (!chapters || chapters.length === 0) {
+      content.textContent = text;
+      return;
+    }
+    var html = '';
+    var lastIdx = 0;
+    for (var i = 0; i < chapters.length; i++) {
+      var idx = chapters[i].charIndex;
+      if (idx > lastIdx) html += escapeHtml(text.slice(lastIdx, idx));
+      html += '<span class="ch-mark" data-ch="' + i + '" style="display:inline;width:0;height:0;"></span>';
+      lastIdx = idx;
+    }
+    html += escapeHtml(text.slice(lastIdx));
+    content.innerHTML = html;
+  }
+
+  function mapChaptersToPages(chapters) {
+    if (!chapters || chapters.length === 0) return;
+    var content = document.getElementById('content');
+    var wrap    = document.getElementById('textWrap');
+    var wrapRect = wrap.getBoundingClientRect();
+    for (var i = 0; i < chapters.length; i++) {
+      var span = content.querySelector('[data-ch="' + i + '"]');
+      if (span) {
+        var rect = span.getBoundingClientRect();
+        var relX = rect.left - wrapRect.left;
+        chapters[i].page = Math.max(0, Math.floor((relX + pageStep * 0.1) / pageStep));
+      }
+    }
+  }
+
+  function buildTOC() {
+    var list = document.getElementById('tocList');
+    if (!list) return;
+    list.innerHTML = '';
+
+    var book = (currentBook !== null) ? books[currentBook] : null;
+    var chapters = book && book.chapters;
+
+    if (!chapters || chapters.length === 0) {
+      list.innerHTML = '<div class="toc-empty">No chapters detected.<br/>Chapters are found automatically<br/>from headings in the text.</div>';
+      return;
+    }
+
+    for (var i = 0; i < chapters.length; i++) {
+      (function(ch, idx) {
+        var btn = document.createElement('button');
+        btn.className = 'toc-item';
+
+        var numEl = document.createElement('span');
+        numEl.className = 'toc-item-num';
+        numEl.textContent = (idx + 1) + '';
+
+        var titleEl = document.createElement('span');
+        titleEl.className = 'toc-item-title';
+        titleEl.textContent = ch.title;
+
+        var pageEl = document.createElement('span');
+        pageEl.className = 'toc-item-page';
+        pageEl.textContent = (typeof ch.page === 'number') ? (ch.page + 1) : '';
+
+        btn.appendChild(numEl);
+        btn.appendChild(titleEl);
+        btn.appendChild(pageEl);
+
+        btn.onclick = function() {
+          hideTOC();
+          if (typeof ch.page === 'number') goToPage(ch.page, true);
+        };
+        list.appendChild(btn);
+      })(chapters[i], i);
+    }
+  }
+
+  function showTOC() {
+    buildTOC();
+    document.getElementById('tocPanel').classList.add('open');
+    document.getElementById('tocOverlay').classList.add('open');
+    // Theme the panel
+    var t = THEMES[prefs.themeIdx] || THEMES[1];
+    document.getElementById('tocPanel').style.background = t.bg;
+    document.getElementById('tocPanel').style.color = t.fg;
+    var label = document.querySelector('.toc-title-label');
+    if (label) label.style.color = (prefs.themeIdx >= 4) ? '#b09870' : '#6b4a14';
+    var items = document.querySelectorAll('.toc-item-title');
+    for (var i = 0; i < items.length; i++) items[i].style.color = t.fg;
+  }
+
+  function hideTOC() {
+    document.getElementById('tocPanel').classList.remove('open');
+    document.getElementById('tocOverlay').classList.remove('open');
+  }
+
+  document.getElementById('tocBtn').onclick   = function(){ showTOC(); };
+  document.getElementById('closeToc').onclick = function(){ hideTOC(); };
+  document.getElementById('tocOverlay').onclick = function(){ hideTOC(); };
   function addBookFromText(title, text){
     var t = (title || 'Untitled').replace(/^\s+|\s+$/g, '');
     if (t.length > 60) t = t.substring(0, 58) + '…';
@@ -1568,7 +2035,7 @@ body {
       type: 'txt',
       content: text,
       color: Math.floor(Math.random() * COLORS.length),
-      size: Math.floor(Math.random() * 5),
+      size: Math.floor(Math.random() * 6),
       bookmarks: [],
       added: (new Date()).getTime()
     });
@@ -1625,7 +2092,6 @@ body {
     document.getElementById('pasteModal').classList.remove('open');
   };
 
-  // Smart encoding read: BOM check, UTF-8 first, fall back to EUC-KR if many replacement chars
   function badCharRatio(text){
     var sampleLen = Math.min(text.length, 8000);
     if (sampleLen === 0) return 1;
@@ -1637,7 +2103,6 @@ body {
   }
 
   function readFileSmart(file, callback){
-    // Step 1: read as ArrayBuffer to inspect BOM
     var probe = new FileReader();
     probe.onload = function(ev){
       var buf = ev.target.result;
@@ -1650,17 +2115,13 @@ body {
       } else if (arr.length >= 2 && arr[0] === 0xFE && arr[1] === 0xFF) {
         enc = 'UTF-16BE';
       }
-
-      // Step 2: read with first guess
       var first = new FileReader();
       first.onload = function(ev2){
         var text = ev2.target.result;
-        // If UTF-8 result looks bad, try Korean encoding
         if (enc === 'UTF-8' && badCharRatio(text) > 0.01) {
           var second = new FileReader();
           second.onload = function(ev3){
             var text2 = ev3.target.result;
-            // Pick whichever is cleaner
             if (badCharRatio(text2) < badCharRatio(text)) callback(text2, 'EUC-KR');
             else callback(text, 'UTF-8');
           };
@@ -1678,7 +2139,6 @@ body {
     probe.onerror = function(){ alert('Could not read the file.'); };
     try { probe.readAsArrayBuffer(file); }
     catch(err) {
-      // very old browser without ArrayBuffer support: fall back to plain read
       var fr = new FileReader();
       fr.onload = function(ev){ callback(ev.target.result, 'UTF-8'); };
       fr.onerror = function(){ alert('Could not read the file.'); };
@@ -1700,7 +2160,7 @@ body {
           title: title,
           type: 'pdf',
           color: Math.floor(Math.random() * COLORS.length),
-          size: Math.floor(Math.random() * 5),
+          size: Math.floor(Math.random() * 6),
           bookmarks: [],
           added: (new Date()).getTime()
         });
@@ -1724,7 +2184,7 @@ body {
     if (isPdf) {
       addPDFBook(file);
     } else {
-      readFileSmart(file, function(text, enc){
+      readFileSmart(file, function(text){
         var title = file.name.replace(/\.txt$/i, '');
         addBookFromText(title, text);
       });
@@ -1733,16 +2193,10 @@ body {
   };
 
   function attemptCloseBook(){
-    if (currentBook === null) { closeBook(); return; }
-    var book = books[currentBook];
-    var isBookmarked = book && book.bookmarks && book.bookmarks.indexOf(currentPage) >= 0;
-    // No prompt if: page already bookmarked, OR user hasn't moved from where they opened
-    if (isBookmarked || currentPage === openedAtPage) {
-      closeBook();
-      return;
-    }
-    document.getElementById('promptPageNum').textContent = 'page ' + (currentPage + 1);
-    document.getElementById('bookmarkPrompt').classList.add('open');
+    // Position is auto-saved on every page turn; just flush immediately and close
+    if (lastPageSaveTimer) { clearTimeout(lastPageSaveTimer); lastPageSaveTimer = null; }
+    saveLastPage();
+    closeBook();
   }
 
   document.getElementById('backBtn').onclick = attemptCloseBook;
@@ -1775,7 +2229,7 @@ body {
     if (e.target === this) this.classList.remove('open');
   };
 
-  // Reader navigation: tap & swipe & long-press for bookmarks
+  // Reader touch / swipe / long-press
   var paper = document.getElementById('paper');
   var startX = 0, startY = 0, startT = 0, moved = false;
   var longPressTimer = null;
@@ -1839,7 +2293,6 @@ body {
     longPressFired = false;
   }, false);
 
-  // mouse fallback (desktop preview)
   paper.addEventListener('click', function(e){
     if ('ontouchstart' in window) return;
     var w = paper.clientWidth;
@@ -1849,7 +2302,7 @@ body {
     else flashUI();
   });
 
-  // Settings buttons
+  // Settings controls
   document.getElementById('fontUp').onclick = function(){
     if (prefs.fontSize < 30) { prefs.fontSize += 2; savePrefs(); applyFont(); }
   };
@@ -1863,7 +2316,6 @@ body {
     if (prefs.lineIdx > 0) { prefs.lineIdx--; savePrefs(); applyFont(); }
   };
 
-  // Build swatches
   (function buildSwatches(){
     var row = document.getElementById('swatchRow');
     for (var i = 0; i < THEMES.length; i++) {
@@ -1884,7 +2336,6 @@ body {
     }
   })();
 
-  // Build font buttons
   (function buildFonts(){
     var row = document.getElementById('fontRow');
     for (var i = 0; i < FONTS.length; i++) {
@@ -1969,12 +2420,10 @@ body {
     }
   }
 
-  // resize / orientation
   var resizeT;
   function onResize(){
     clearTimeout(resizeT);
     resizeT = setTimeout(function(){
-      // re-render shelf to recalculate books per row
       if (currentBook === null && books.length > 0) renderShelf();
       if (currentBook !== null) {
         var b = books[currentBook];
@@ -1995,7 +2444,6 @@ body {
     }, 420);
   });
 
-  // prevent accidental scroll bounce on iOS
   document.addEventListener('touchmove', function(e){
     var t = e.target;
     while (t) {
@@ -2008,7 +2456,6 @@ body {
   // ============ INIT ============
   renderShelf();
 
-  // Register Service Worker for offline support
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
       navigator.serviceWorker.register('sw.js').catch(function(err){
