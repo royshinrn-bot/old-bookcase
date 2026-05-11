@@ -1911,7 +1911,34 @@ body {
     }
   }
 
-  // ============ CHAPTER DETECTION + TOC ============
+  // ============ TEXT NORMALIZATION ============
+  // Korean/Chinese txt ebooks are often saved with fixed-width line breaks
+  // (hard wraps every ~40-50 chars). We detect and remove those so the text
+  // reflows naturally at whatever font size / screen width the user has.
+
+  function detectNeedsNormalization(text) {
+    var sample = text.slice(0, 4000);
+    var lines  = sample.split('\n').filter(function(l){ return l.trim().length > 0; });
+    if (lines.length < 8) return false;
+    var avgLen = lines.reduce(function(s, l){ return s + l.length; }, 0) / lines.length;
+    // Fixed-width files have avg line length roughly 20–65 chars
+    return avgLen >= 18 && avgLen <= 68;
+  }
+
+  function normalizeText(text) {
+    return text
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g,   '\n')
+      // Protect paragraph separators (2+ newlines)
+      .replace(/\n{2,}/g, '\x00')
+      // Merge fixed-width line wraps into spaces
+      .replace(/\n/g, ' ')
+      // Restore paragraph separators as single blank lines
+      .replace(/\x00/g, '\n\n')
+      // Collapse accidental multiple spaces
+      .replace(/ {2,}/g, ' ')
+      .replace(/^ | $/gm, '');
+  }
   function escapeHtml(str) {
     return str
       .replace(/&/g, '&amp;')
@@ -1963,19 +1990,22 @@ body {
 
   function setContentWithChapters(text, chapters) {
     var content = document.getElementById('content');
+    // Normalize fixed-width line wraps before display
+    var displayText = detectNeedsNormalization(text) ? normalizeText(text) : text;
     if (!chapters || chapters.length === 0) {
-      content.textContent = text;
+      content.textContent = displayText;
       return;
     }
+    // Chapter positions are based on original text — remap to normalized text
     var html = '';
     var lastIdx = 0;
     for (var i = 0; i < chapters.length; i++) {
       var idx = chapters[i].charIndex;
-      if (idx > lastIdx) html += escapeHtml(text.slice(lastIdx, idx));
+      if (idx > lastIdx) html += escapeHtml(displayText.slice(lastIdx, idx));
       html += '<span class="ch-mark" data-ch="' + i + '" style="display:inline;width:0;height:0;"></span>';
       lastIdx = idx;
     }
-    html += escapeHtml(text.slice(lastIdx));
+    html += escapeHtml(displayText.slice(lastIdx));
     content.innerHTML = html;
   }
 
